@@ -57,12 +57,13 @@
     min-width:14px;text-align:right;font-variant-numeric:tabular-nums}
   .goals.gwin{color:#fff}
   .goals .pen{font-size:9px;font-weight:700;color:#f2cf4f;margin-left:1px}
-  .champ{display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:210px}
+  .champ{display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:210px;position:relative}
   .champbody{justify-content:center !important;align-items:stretch;flex:1}
-  .finalmatch{width:100%;margin-bottom:4px;flex:0 0 auto}
+  .champ-top{position:absolute;top:26px;left:0;right:0;display:flex;flex-direction:column;align-items:center;z-index:2}
+  .finalmatch{width:100%;flex:0 0 auto}
   .finalcard{border-color:var(--gold);background:#16261c}
   .finalcard .mpill{background:var(--gold);color:#0a1929;border-bottom-color:#caa408;font-weight:800}
-  .trophy{font-size:38px;filter:drop-shadow(0 4px 10px rgba(245,197,24,.4));margin:6px 0 2px}
+  .trophy{font-size:32px;filter:drop-shadow(0 4px 10px rgba(245,197,24,.4));margin:0 0 2px;text-align:center}
   .champbox{background:linear-gradient(160deg,#1a2f1f,#13261a);border:2px solid var(--gold);
     border-radius:12px;padding:12px 16px;text-align:center;width:100%}
   .champbox .lab{font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase}
@@ -105,6 +106,72 @@
     resize:vertical;outline:none;word-break:break-all}
   .backuparea:focus{border-color:var(--gold)}
   .modalbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+  .gamebox{width:min(440px,94vw)}
+  .gamehdr{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#8aa3bf;
+    text-align:center;margin-bottom:8px;font-weight:700}
+  .gamematchup{display:flex;align-items:center;justify-content:center;gap:10px;
+    font-size:18px;font-weight:800;color:var(--ink);margin-bottom:4px;flex-wrap:wrap}
+  .gamematchup .tm{display:flex;align-items:center;gap:6px}
+  .gamematchup .vs2{font-size:12px;color:#65809d;font-weight:600}
+  .gamematchup .sc{color:var(--gold)}
+  .gamesub{text-align:center;font-size:12px;color:#8aa3bf;margin-bottom:14px}
+  .gamepicks{display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow-y:auto}
+  .pickrow{display:flex;align-items:center;gap:9px;background:#0d2236;border:1px solid #1f3a55;
+    border-radius:9px;padding:8px 11px}
+  .pickrow .pname{font-weight:700;font-size:13px;color:#cfe2ff;min-width:70px}
+  .pickrow .parrow{color:#65809d;font-size:12px}
+  .pickrow .ppick{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;flex:1}
+  .pickrow.correct2{border-color:#2ea043;background:#10271a}
+  .pickrow.wrong2{opacity:.6}
+  .pickrow .badge{margin-left:auto;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:5px;letter-spacing:.4px}
+  .pickrow.correct2 .badge{background:rgba(46,160,67,.25);color:#5fd17e}
+  .pickrow.wrong2 .badge{background:rgba(192,57,43,.2);color:#e0795a}
+  .pickrow .badge.pending{background:#16314b;color:#8aa3bf}
+  .gamenote{text-align:center;font-size:11px;color:#7d96b3;margin-top:8px}
+  .teamhdr{display:flex;align-items:center;justify-content:center;gap:8px;font-size:20px;font-weight:800;
+    color:var(--ink);margin-bottom:4px;flex-wrap:wrap}
+  .teamhdr .status{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px}
+  .teamhdr .status.alive{background:rgba(46,160,67,.2);color:#5fd17e}
+  .teamhdr .status.out{background:rgba(192,57,43,.2);color:#e0795a;text-decoration:line-through}
+  .teamhdr .status.alive::before{content:'still in'}
+  .teamhdr .status.out::before{content:'eliminated'}
+  /* team modal: labeled column grid */
+  .tgrid{display:flex;flex-direction:column;gap:5px}
+  .tgrid-head,.tgrid-row{display:grid;grid-template-columns:1fr 52px 52px 52px 56px;align-items:center;gap:6px}
+  .tgrid-head{padding:0 11px 2px;font-size:9.5px;text-transform:uppercase;letter-spacing:.4px;color:#7d96b3;font-weight:700}
+  .tgrid-row{background:#0d2236;border:1px solid #1f3a55;border-radius:9px;padding:8px 11px}
+  .tgrid-row.zero{opacity:.5}
+  .tg-name{font-weight:700;font-size:13px;color:#cfe2ff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tg-col{text-align:center;font-size:13px;font-variant-numeric:tabular-nums}
+  .tg-col.tg-total{font-weight:800;color:var(--gold)}
+  .tg-dash{color:#3f5a78}
+  .tnum{font-weight:800;padding:2px 7px;border-radius:5px;font-size:12.5px}
+  .tnum.earned{background:rgba(46,160,67,.25);color:#5fd17e}
+  .tnum.live{background:rgba(245,197,24,.18);color:#f2cf4f}
+  .tnum.dead{background:rgba(192,57,43,.18);color:#e0795a}
+  .datesec{margin-top:18px}
+  .datenav{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:12px}
+  .datelabel{font-size:15px;font-weight:800;color:var(--ink)}
+  .datecount{font-size:11px;font-weight:600;color:#8aa3bf}
+  .dgames{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+  .dgame{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .dg-hdr{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:#8aa3bf;font-weight:700;margin-bottom:5px}
+  .dg-time{color:var(--gold)}
+  .dg-match{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:9px;line-height:1.4}
+  .dg-vs{color:#65809d;font-size:11px;font-weight:600;margin:0 2px}
+  .dg-score{color:var(--gold);font-weight:800}
+  .dg-adv{font-size:11px;color:#5fd17e;font-weight:700}
+  .dg-picks{display:flex;flex-direction:column;gap:3px}
+  .dg-head,.dg-row{display:grid;grid-template-columns:1fr 1.2fr 38px 38px 38px;align-items:center;gap:5px}
+  .dg-head{padding:0 7px 1px;font-size:9px;text-transform:uppercase;letter-spacing:.3px;color:#7d96b3;font-weight:700}
+  .dg-row{font-size:12px;padding:4px 7px;border-radius:6px;background:#0d2236}
+  .dg-row.ok{background:#10271a}
+  .dg-row.no{opacity:.55}
+  .dg-name{font-weight:700;color:#cfe2ff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dg-pick{color:#cdd9e6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dg-col{text-align:center;font-variant-numeric:tabular-nums}
+  .mpill{cursor:pointer}
+  .mpill:hover{filter:brightness(1.25)}
   select.namefield{cursor:pointer;width:auto;min-width:160px}
   body.viewing .slot{cursor:default}
   .namefield{background:#0b1c2e;color:var(--ink);border:1px solid var(--line);
@@ -208,15 +275,18 @@
   <h1>FIFA World Cup <span class="yr">2026</span> — Knockout Bracket</h1>
 
   <div class="modeswitch">
-    <button class="mode" id="m-results" onclick="setMode('results')">🏁 Actual Results</button>
-    <button class="mode" id="m-edit" onclick="setMode('edit')">✏️ Create / Edit</button>
+    <button class="mode" id="m-results" onclick="setMode('results')">🏁 Bracket</button>
+    <button class="mode" id="m-standings" onclick="setMode('standings')">📊 Standings</button>
+    <!-- LOCKED VIEW-ONLY BUILD: Create/Edit tab hidden. Brackets are hardcoded (Hunt Family).
+         To re-enable editing in a future version, un-comment the button below. -->
+    <!-- <button class="mode" id="m-edit" onclick="setMode('edit')">✏️ Create / Edit</button> -->
     <button class="mode" id="m-view" onclick="setMode('view')">👁 View Saved</button>
   </div>
 
   <div class="sub" id="editingLine"></div>
 
-  <!-- controls for CREATE/EDIT mode -->
-  <div class="bar" id="editBar">
+  <!-- controls for CREATE/EDIT mode (hidden/disabled in locked build) -->
+  <div class="bar" id="editBar" style="display:none">
     <button class="tool" onclick="reset()">↺ Clear picks</button>
     <button class="tool" onclick="autofill()">🎲 Random fill</button>
     <input id="nameInput" class="namefield" type="text" maxlength="24"
@@ -226,49 +296,62 @@
     <button class="tool" onclick="doPrint()">🖨 Print</button>
   </div>
 
-  <!-- controls for ACTUAL RESULTS mode (fully automatic) -->
+  <!-- controls for ACTUAL RESULTS / BRACKET mode -->
   <div class="bar" id="resultsBar" style="display:none">
-    <button class="tool gold" onclick="syncResults(true)">🔄 Sync now</button>
     <span class="viewlab" id="syncStamp"></span>
     <button class="tool" onclick="savePDF()">📄 Save PDF</button>
     <button class="tool" onclick="doPrint()">🖨 Print</button>
+  </div>
+
+  <!-- controls for STANDINGS mode -->
+  <div class="bar" id="standingsBar" style="display:none">
+    <span class="viewlab" id="syncStamp2"></span>
+    <button class="tool" onclick="savePDF()">📄 Save PDF</button>
   </div>
 
   <!-- controls for VIEW SAVED mode -->
   <div class="bar" id="viewBar" style="display:none">
     <span class="viewlab">Viewing:</span>
     <select id="viewSelect" class="namefield" onchange="viewSelected()"></select>
+    <!-- LOCKED BUILD: editing disabled. Re-enable for an editable version.
     <button class="tool" onclick="editFromView()">✏️ Edit this bracket</button>
+    -->
     <button class="tool" onclick="savePDF()">📄 Save PDF</button>
     <button class="tool" onclick="doPrint()">🖨 Print</button>
   </div>
 
-  <!-- always-visible backup bar: the portable safety net for saved brackets -->
+  <!-- LOCKED BUILD: backup bar (export/import) fully disabled. Re-enable for an editable version:
   <div class="bar backupbar">
-    <button class="tool gold" onclick="loadHuntFamily()">👨‍👩‍👦 Hunt Family Brackets</button>
+    <button class="tool gold" onclick="loadHuntFamily()">👨‍👩‍👦 Load Hunt Family Brackets</button>
     <span class="viewlab">·</span>
     <button class="tool" onclick="exportFile()">⬆️ Export to file</button>
-    <button class="tool" onclick="importFile()">⬇️ Import from file</button>
     <input id="importPicker" type="file" accept=".json,application/json,.txt" style="display:none" onchange="onImportFile(event)">
     <span class="viewlab" id="backupCount"></span>
+    <button class="tool" onclick="importFile()">⬇️ Import from file</button>
     <span class="viewlab pastelink" onclick="exportData()">paste code instead</span>
   </div>
+  -->
 
   <div class="scorebar" id="scorebar">
     <span class="pts" id="ptsTotal">0</span><span class="ptslab">/ 800 pts</span>
     <span class="rsplit" id="rsplit"></span>
   </div>
-  <div class="legend">Round of 32 → Round of 16 → Quarterfinals → Semifinals → Final · Scoring: R32 10 · R16 20 · QF 40 · SF 80 · Final 160 per correct pick</div>
+  <div class="legend" id="scoringLegend">Round of 32 → Round of 16 → Quarterfinals → Semifinals → Final · Scoring: R32 10 · R16 20 · QF 40 · SF 80 · Final 160 per correct pick</div>
   <div class="legend" id="modehint"></div>
 </header>
 
-<div id="leaderboard" class="lb"></div>
-
-
-<div class="scroll">
-<div class="bracket" id="bracket"></div>
+<!-- STANDINGS section: leaderboard + games by date (shown only in Standings tab) -->
+<div id="standingsSection" style="display:none">
+  <div id="leaderboard" class="lb"></div>
+  <div id="dateGames" class="lb datesec"></div>
 </div>
-<div class="note">Bracket as confirmed after the group stage (June 28, 2026). Single elimination; final July 19 at MetLife Stadium.</div>
+
+<!-- BRACKET section: the bracket itself (shown in Bracket and View Saved tabs) -->
+<div id="bracketSection" class="scroll">
+  <div class="bracket" id="bracket"></div>
+</div>
+<div class="note" id="bracketNote">Bracket as confirmed after the group stage (June 28, 2026). Single elimination; final July 19 at MetLife Stadium.</div>
+
 
 <!-- backup modal -->
 <div id="backupModal" class="modal" style="display:none">
@@ -284,9 +367,36 @@
   </div>
 </div>
 
+<!-- game details modal: who picked whom for a specific match -->
+<div id="gameModal" class="modal" style="display:none" onclick="if(event.target===this)closeGameModal()">
+  <div class="modalbox gamebox">
+    <div class="gamehdr" id="gameHdr"></div>
+    <div class="gamematchup" id="gameMatchup"></div>
+    <div class="gamesub" id="gameSub"></div>
+    <div class="gamepicks" id="gamePicks"></div>
+    <div class="modalbtns">
+      <button class="tool" onclick="closeGameModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- team points modal: how many points each person gets from a team -->
+<div id="teamModal" class="modal" style="display:none" onclick="if(event.target===this)closeTeamModal()">
+  <div class="modalbox gamebox">
+    <div class="teamhdr" id="teamHdr"></div>
+    <div class="gamesub" id="teamSub"></div>
+    <div class="gamepicks" id="teamRows"></div>
+    <div class="gamenote" id="teamLegend"><b>Earned</b> = points already banked · <b>Live</b> = still possible (team alive) · <b>Lost</b> = forfeited (team out) · <b>Total</b> = full stake</div>
+    <div class="modalbtns">
+      <button class="tool" onclick="closeTeamModal()">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ---- team data: name, flag emoji, brand color, seed label ----
 const T = {
+
   RSA:["South Africa","🇿🇦","#007749","A2"], CAN:["Canada","🇨🇦","#d52b1e","B2"],
   BRA:["Brazil","🇧🇷","#009c3b","C1"], JPN:["Japan","🇯🇵","#bc002d","F2"],
   GER:["Germany","🇩🇪","#111111","E1"], PAR:["Paraguay","🇵🇾","#d52b1e","D3"],
@@ -542,7 +652,7 @@ async function syncResults(manual){
   syncing=false;
   if(!ok || !data || !Array.isArray(data.matches)){
     if(manual){
-      flash('⚠ Sync blocked here (sandbox network limit). Scores still update in the downloaded/PDF copy. Tap Sync now to retry.');
+      flash('⚠ Sync blocked here (sandbox network limit). Scores still update in the downloaded/hosted copy.');
       // also surface a persistent hint in the mode line
       const hint=document.getElementById('modehint');
       if(hint) hint.textContent='Live sync can be blocked inside this preview frame. If it keeps failing, results still load when you open the downloaded HTML file in a browser. Already-recorded games (e.g. Canada) stay shown regardless.';
@@ -552,26 +662,28 @@ async function syncResults(manual){
   const {bracket,applied,scores}=applyFeed(data.matches);
   // never lose the known seed: ensure Canada R32 if feed somehow lacks it
   if(!bracket[0][0].w){ const seed=deserialize(seedResults()); bracket[0][0].w=seed[0][0].w; }
+  // detect whether anything actually changed (avoid needless re-renders on the 15s poll)
+  const before=serialize(results)+'|'+JSON.stringify(SCORES);
   results=bracket;
-  // merge scores: prefer freshly-fetched, but keep the seed if feed lacks it
   SCORES = Object.keys(scores).length ? scores : SCORES;
   const ck=['CAN','RSA'].sort().join('|');
   if(!SCORES[ck]) Object.assign(SCORES, seedScores());
+  const after=serialize(results)+'|'+JSON.stringify(SCORES);
+  const changed = before!==after;
   await persistResults();
   await storeSet('wc:scores', SCORES);
   lastSync=new Date();
-  render(); renderLeaderboard();
+  // re-render only if data changed (so open popups aren't disturbed by the poll),
+  // or if the user pressed a manual control
+  if(changed || manual){ render(); renderLeaderboard(); }
   updateSyncStamp();
   if(manual) flash('Results synced ✓ ('+applied+' knockout game'+(applied===1?'':'s')+' recorded)');
-  return true;
+  return changed;
 }
 
 function updateSyncStamp(){
-  const el=document.getElementById('syncStamp');
-  if(!el) return;
-  if(!lastSync){ el.textContent=''; return; }
-  const t=lastSync.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
-  el.textContent='Last synced '+t;
+  const txt = lastSync ? ('Last synced '+lastSync.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})) : '';
+  ['syncStamp','syncStamp2'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=txt; });
 }
 
 // generic slot resolver against a given bracket
@@ -611,28 +723,41 @@ function clearDownstreamIn(br,r,mi){
 
 function setMode(m){
   MODE=m;
-  // toolbar visibility
-  document.getElementById('editBar').style.display    = (m==='edit')   ?'flex':'none';
-  document.getElementById('resultsBar').style.display = (m==='results')?'flex':'none';
-  document.getElementById('viewBar').style.display    = (m==='view')   ?'flex':'none';
+  // toolbar visibility (null-safe: some bars/tabs are hidden in the locked build)
+  const setDisp=(id,show,disp)=>{ const el=document.getElementById(id); if(el) el.style.display=show?(disp||'flex'):'none'; };
+  setDisp('editBar',     m==='edit');
+  setDisp('resultsBar',  m==='results');
+  setDisp('standingsBar',m==='standings');
+  setDisp('viewBar',     m==='view');
+  // section visibility: bracket vs standings
+  setDisp('bracketSection', m!=='standings', 'block');
+  setDisp('bracketNote',    m!=='standings', 'block');
+  setDisp('standingsSection', m==='standings', 'block');
+  // scorebar + scoring legend only meaningful with a bracket on screen
+  setDisp('scorebar',      m==='results'||m==='view'||m==='edit');
+  setDisp('scoringLegend', m==='results'||m==='view'||m==='edit', 'block');
   // active tab styling
-  ['results','edit','view'].forEach(k=>{
-    document.getElementById('m-'+k).classList.toggle('active', k===m);
+  ['results','standings','edit','view'].forEach(k=>{
+    const el=document.getElementById('m-'+k); if(el) el.classList.toggle('active', k===m);
   });
   // body class drives result-highlight styling only in results mode
   document.body.classList.toggle('results', m==='results');
   document.body.classList.toggle('viewing', m==='view');
 
   if(m==='results'){
-    document.getElementById('editingLine').textContent='ACTUAL RESULTS — these update automatically from live data. Tap 🔄 Sync now to refresh. This is what everyone is scored against.';
-    document.getElementById('modehint').textContent='Source updates roughly daily (not second-by-second). Saved brackets re-score automatically.';
+    document.getElementById('editingLine').textContent='BRACKET — live actual results, auto-updating. Tap a team to see who picked it; tap a game header to see everyone’s pick.';
+    document.getElementById('modehint').textContent='Source updates roughly daily (not second-by-second).';
     updateSyncStamp();
     syncResults(false);   // refresh on entering the tab
+  } else if(m==='standings'){
+    document.getElementById('editingLine').textContent='STANDINGS — the leaderboard and a breakdown of every game by date, with each person’s picks and points.';
+    document.getElementById('modehint').textContent='';
+    updateSyncStamp();
   } else if(m==='edit'){
     document.getElementById('editingLine').textContent='CREATE / EDIT — tap teams to advance them, type a name, then Save. Winners flow to the next round automatically.';
     document.getElementById('modehint').textContent='';
   } else { // view
-    document.getElementById('editingLine').textContent='VIEW SAVED — pick a bracket below to view it read-only. Its score against current actual results is shown.';
+    document.getElementById('editingLine').textContent='VIEW SAVED — pick a bracket to view it read-only. Its score against current actual results is shown.';
     document.getElementById('modehint').textContent='';
     populateViewSelect();
   }
@@ -675,6 +800,44 @@ function isAlive(code){
     if((a===code||b===code) && m.w!==code) return false; // played and lost
   }
   return true;
+}
+
+// did team `code` actually win its match in round r of the real results? (null if not decided/not present)
+function teamWonRound(code,r){
+  for(let mi=0;mi<results[r].length;mi++){
+    const a=slotTeamIn(results,r,mi,'a'), b=slotTeamIn(results,r,mi,'b');
+    if(a===code||b===code){
+      if(!results[r][mi].w) return null;        // match exists but undecided
+      return results[r][mi].w===code;           // true if they won, false if lost
+    }
+  }
+  return null;                                   // team not in this round of actual results
+}
+
+// for a person's bracket (serialized) and a team code: how many points that team gives them.
+// counts EVERY round where the person advanced that team. Splits earned / live / dead.
+function teamPointsFor(code2, teamCode){
+  const br=deserialize(code2);
+  let earned=0, live=0, dead=0;
+  const rounds5=['R32','R16','QF','SF','F'];
+  const detail=[]; // {round, pts, state}
+  for(let r=0;r<5;r++){
+    // did this person pick teamCode to win a match in round r?
+    let picked=false;
+    for(let mi=0;mi<br[r].length;mi++){ if(br[r][mi].w===teamCode){ picked=true; break; } }
+    if(!picked) continue;
+    const pts=PTS[r];
+    const won=teamWonRound(teamCode,r);          // true / false / null
+    let state;
+    if(won===true){ earned+=pts; state='earned'; }
+    else if(won===false){ dead+=pts; state='dead'; }
+    else { // undecided in actual results — live only if team still alive
+      if(isAlive(teamCode)){ live+=pts; state='live'; }
+      else { dead+=pts; state='dead'; }
+    }
+    detail.push({round:rounds5[r], pts, state});
+  }
+  return {earned, live, dead, total:earned+live+dead, detail};
 }
 // live score of the currently-edited picks bracket
 function computeScore(){ return scoreBracket(serialize(rounds)); }
@@ -743,6 +906,8 @@ function matchEl(r,mi){
   // header pill: date · time · venue (R32) or round · date window (later rounds)
   const pill=document.createElement('div'); pill.className='mpill';
   pill.textContent=matchHeader(r,mi);
+  pill.title='Tap to see who picked whom';
+  pill.onclick=(ev)=>{ ev.stopPropagation(); openGameModal(r,mi); };
   card.appendChild(pill);
 
   const sa=slotEl(r,mi,'a');
@@ -807,7 +972,13 @@ function slotEl(r,mi,side){
     }
 
     el.innerHTML=`<span class="flag">${fl}</span><span class="nm">${nm}</span>${scoreHTML}<span class="seed">${sd}</span>`;
-    if(MODE==='edit') el.onclick=()=>pick(r,mi,side);   // results=auto, view=read-only
+    if(MODE==='edit'){
+      el.onclick=()=>pick(r,mi,side);                 // edit: tap picks the winner
+    } else {
+      el.style.cursor='pointer';
+      el.title='Tap to see each person’s points from '+nm;
+      el.onclick=()=>openTeamModal(code);             // results/view: tap shows team points
+    }
   } else {
     el.innerHTML=`<span class="flag">·</span><span class="nm" style="color:#5d7a99">—</span>`;
   }
@@ -820,12 +991,28 @@ function championCol(){
   const wcode=final.w;
   const lab=document.createElement('div'); lab.className='rndlabel'; lab.textContent='Final';
   d.appendChild(lab);
+
+  // winner box pinned to the TOP (absolutely positioned, out of the centering flow)
+  const top=document.createElement('div'); top.className='champ-top';
+  const tro=document.createElement('div'); tro.className='trophy'; tro.textContent='🏆';
+  const box=document.createElement('div'); box.className='champbox';
+  if(wcode){
+    const [nm,fl,cc]=T[wcode];
+    box.innerHTML=`<div class="lab">World Cup Winner</div><div class="wf">${fl}</div><div class="who" style="color:${cc==='#111111'?'#fff':cc}">${nm}</div>`;
+  } else {
+    box.innerHTML=`<div class="lab">World Cup Winner</div><div class="wf">❔</div><div class="who" style="color:#7d96b3">TBD</div>`;
+  }
+  top.appendChild(tro);
+  top.appendChild(box);
+  d.appendChild(top);
+
   const body=document.createElement('div'); body.className='colbody champbody';
 
-  // the Final is round 4, match 0 — two clickable slots fed by the two semifinal winners
+  // the Final match card — the only flowed child, so it sits at the true vertical center (aligned with the semifinals)
   const finalMatch=document.createElement('div'); finalMatch.className='finalmatch';
   const card=document.createElement('div'); card.className='matchcard finalcard';
   const pill=document.createElement('div'); pill.className='mpill'; pill.textContent=matchHeader(4,0);
+  pill.title='Tap to see who picked whom'; pill.onclick=(ev)=>{ ev.stopPropagation(); openGameModal(4,0); };
   card.appendChild(pill);
   card.appendChild(slotEl(4,0,'a'));
   const vs=document.createElement('div'); vs.className='vsdiv'; vs.innerHTML='<span>vs</span>';
@@ -834,16 +1021,6 @@ function championCol(){
   finalMatch.appendChild(card);
   body.appendChild(finalMatch);
 
-  const tro=document.createElement('div'); tro.className='trophy'; tro.textContent='🏆';
-  body.appendChild(tro);
-  const box=document.createElement('div'); box.className='champbox';
-  if(wcode){
-    const [nm,fl,cc]=T[wcode];
-    box.innerHTML=`<div class="lab">World Cup Winner</div><div class="wf">${fl}</div><div class="who" style="color:${cc==='#111111'?'#fff':cc}">${nm}</div>`;
-  } else {
-    box.innerHTML=`<div class="lab">World Cup Winner</div><div class="wf">❔</div><div class="who" style="color:#7d96b3">TBD</div>`;
-  }
-  body.appendChild(box);
   d.appendChild(body);
   return d;
 }
@@ -1004,6 +1181,134 @@ function copyBackup(){
   flash(done?'Backup code copied ✓':'Select the code and copy it manually.');
 }
 function closeModal(){ document.getElementById('backupModal').style.display='none'; }
+
+// ---- game details: who picked whom for the match at (r,mi) ----
+function closeGameModal(){ document.getElementById('gameModal').style.display='none'; }
+
+// ---- team points modal: each person's earned/live/dead points from a team ----
+function closeTeamModal(){ document.getElementById('teamModal').style.display='none'; }
+
+function openTeamModal(teamCode){
+  const [nm,fl]=T[teamCode];
+  const alive=isAlive(teamCode);
+  document.getElementById('teamHdr').innerHTML=
+    `<span>${fl} ${nm}</span><span class="status ${alive?'alive':'out'}"></span>`;
+
+  const host=document.getElementById('teamRows');
+  const sub=document.getElementById('teamSub');
+  if(entries.length===0){
+    sub.textContent='';
+    host.innerHTML='<div class="gamenote">No saved brackets yet.</div>';
+    document.getElementById('teamModal').style.display='flex';
+    return;
+  }
+
+  // compute each person's points from this team, sort by total descending
+  const rows=entries.map(e=>({name:e.name, tp:teamPointsFor(e.code, teamCode)}))
+    .sort((a,b)=> (b.tp.live+b.tp.earned)-(a.tp.live+a.tp.earned) || b.tp.total-a.tp.total || a.name.localeCompare(b.name));
+
+  // headline: who has the most riding on this team
+  const withLive=rows.filter(r=>r.tp.live>0).sort((a,b)=>b.tp.live-a.tp.live);
+  if(withLive.length){
+    const top=withLive[0];
+    sub.innerHTML=`<b style="color:#f2cf4f">${escapeHtml(top.name)}</b> has the most riding on ${nm}: <b>${top.tp.live} live point${top.tp.live===1?'':'s'}</b> still possible.`;
+  } else if(rows.some(r=>r.tp.earned>0)){
+    sub.textContent=`${nm} has banked points but has no live points left for anyone.`;
+  } else {
+    sub.textContent=`No one is counting on ${nm} for points.`;
+  }
+
+  // header row + a labeled grid: Name | Earned | Live | Lost | Total
+  let rowsHTML='<div class="tgrid">';
+  rowsHTML+='<div class="tgrid-head">'
+    +'<span class="tg-name">Person</span>'
+    +'<span class="tg-col">Earned</span>'
+    +'<span class="tg-col">Live</span>'
+    +'<span class="tg-col">Lost</span>'
+    +'<span class="tg-col tg-total">Total</span>'
+    +'</div>';
+  rowsHTML+=rows.map(r=>{
+    const {earned,live,dead,total}=r.tp;
+    const cell=(v,cls)=> v>0 ? `<span class="tg-col"><span class="tnum ${cls}">${v}</span></span>` : `<span class="tg-col tg-dash">–</span>`;
+    return `<div class="tgrid-row ${total===0?'zero':''}">`
+      +`<span class="tg-name">${escapeHtml(r.name)}</span>`
+      +cell(earned,'earned')
+      +cell(live,'live')
+      +cell(dead,'dead')
+      +`<span class="tg-col tg-total">${total}</span>`
+      +`</div>`;
+  }).join('');
+  rowsHTML+='</div>';
+  host.innerHTML=rowsHTML;
+  document.getElementById('teamModal').style.display='flex';
+}
+
+function openGameModal(r,mi){
+  const ROUND=['Round of 32','Round of 16','Quarterfinal','Semifinal','Final'][r];
+  // the ACTUAL teams (and result) in this slot
+  const ra=slotTeamIn(results,r,mi,'a'), rb=slotTeamIn(results,r,mi,'b');
+  const actualWinner=results[r][mi].w;
+  const sc=scoreForMatch(r,mi);
+
+  // header
+  document.getElementById('gameHdr').textContent=ROUND+' · '+matchHeader(r,mi);
+
+  // matchup line — use actual teams if known, else "TBD"
+  const mu=document.getElementById('gameMatchup');
+  function tmHTML(code){ return code?`<span class="tm">${T[code][1]} ${T[code][0]}</span>`:'<span class="tm" style="color:#65809d">TBD</span>'; }
+  let scoreMid='<span class="vs2">vs</span>';
+  if(sc){ scoreMid=`<span class="sc">${sc.gA}–${sc.gB}${sc.pen?` (${sc.pen.pA}–${sc.pen.pB} pens)`:''}</span>`; }
+  mu.innerHTML=tmHTML(ra)+scoreMid+tmHTML(rb);
+
+  // subline: status
+  const sub=document.getElementById('gameSub');
+  if(actualWinner){ sub.innerHTML=`Result: <b style="color:#5fd17e">${T[actualWinner][1]} ${T[actualWinner][0]}</b> advanced`; }
+  else if(ra&&rb){ sub.textContent='Not played yet'; }
+  else { sub.textContent='Teams not yet determined'; }
+
+  // each saved bracket's pick for THIS match slot
+  const host=document.getElementById('gamePicks');
+  if(entries.length===0){
+    host.innerHTML='<div class="gamenote">No brackets loaded. Tap “Reload Hunt Family Brackets”.</div>';
+  } else {
+    // sort: correct first, then by name
+    const rows=entries.map(e=>{
+      const br=deserialize(e.code);
+      const pa=slotTeamIn(br,r,mi,'a'), pb=slotTeamIn(br,r,mi,'b');
+      const pick=br[r][mi].w;                 // who they predicted to win this match
+      return {name:e.name, pa, pb, pick};
+    });
+    rows.sort((x,y)=>{
+      const xc=actualWinner&&x.pick===actualWinner?0:1;
+      const yc=actualWinner&&y.pick===actualWinner?0:1;
+      return xc-yc || x.name.localeCompare(y.name);
+    });
+    host.innerHTML=rows.map(row=>{
+      let cls='', badge='';
+      if(row.pick && actualWinner){
+        if(row.pick===actualWinner){ cls='correct2'; badge='<span class="badge">✓ correct</span>'; }
+        else { cls='wrong2'; badge='<span class="badge">✗ wrong</span>'; }
+      } else if(row.pick){
+        badge='<span class="badge pending">pending</span>';
+      }
+      const pickHTML = row.pick
+        ? `${T[row.pick][1]} ${T[row.pick][0]}`
+        : '<span style="color:#65809d">—</span>';
+      // note if their bracket had different teams in this slot than the actual game
+      let mismatch='';
+      if(row.pick && (ra||rb) && ((row.pa&&row.pa!==ra&&row.pa!==rb)||(row.pb&&row.pb!==ra&&row.pb!==rb))){
+        mismatch=` <span style="color:#7d96b3;font-size:10px">(had ${row.pa?T[row.pa][0]:'?'} v ${row.pb?T[row.pb][0]:'?'})</span>`;
+      }
+      return `<div class="pickrow ${cls}">`
+        +`<span class="pname">${escapeHtml(row.name)}</span>`
+        +`<span class="parrow">picked</span>`
+        +`<span class="ppick">${pickHTML}${mismatch}</span>`
+        +badge
+        +`</div>`;
+    }).join('');
+  }
+  document.getElementById('gameModal').style.display='flex';
+}
 function updateBackupCount(){
   const el=document.getElementById('backupCount');
   if(el) el.textContent = entries.length ? `${entries.length} bracket${entries.length===1?'':'s'} saved` : 'no brackets yet';
@@ -1088,7 +1393,7 @@ let pendingDel=null, delT=null;
 
 let flashT=null;
 function defaultLine(){
-  if(MODE==='results') return 'ACTUAL RESULTS — these update automatically from live data. Tap 🔄 Sync now to refresh. This is what everyone is scored against.';
+  if(MODE==='results') return 'BRACKET — live actual results, auto-updating. This is what everyone is scored against.';
   if(MODE==='view')    return 'VIEW SAVED — pick a bracket below to view it read-only. Its score against current actual results is shown.';
   return 'CREATE / EDIT — tap teams to advance them, type a name, then Save. Winners flow to the next round automatically.';
 }
@@ -1111,7 +1416,7 @@ function renderLeaderboard(){
 
   if(entries.length===0){
     host.innerHTML='<div class="lbhead"><h3>Leaderboard</h3></div>'
-      +'<div class="empty2">No saved brackets yet — go to <b>✏️ Create / Edit</b>, fill one out, name it, and Save. '
+      +'<div class="empty2">No brackets loaded. Tap <b>👨‍👩‍👦 Reload Hunt Family Brackets</b> to load them. '
       +(decidedGames?decidedGames+' of '+totalGames+' knockout games recorded so far.':'No knockout results recorded yet.')+'</div>';
     return;
   }
@@ -1210,16 +1515,122 @@ function renderLeaderboard(){
       +`<td class="c-odds">${oddsCell}</td>`
       +`<td class="c-act">`
         +`<button class="mini-btn" onclick="viewEntry('${e.id}')">View</button>`
-        +`<button class="mini-btn" onclick="editEntry('${e.id}')">Edit</button>`
-        +`<button class="mini-btn del${e.id===pendingDel?' arm':''}" onclick="deleteEntry('${e.id}',event)">${e.id===pendingDel?'Delete?':'✕'}</button>`
+        // LOCKED BUILD: Edit & Delete removed. Re-enable for an editable version:
+        // +`<button class="mini-btn" onclick="editEntry('${e.id}')">Edit</button>`
+        // +`<button class="mini-btn del${e.id===pendingDel?' arm':''}" onclick="deleteEntry('${e.id}',event)">${e.id===pendingDel?'Delete?':'✕'}</button>`
       +`</td>`
       +`</tr>`;
   });
   html+='</tbody></table></div>';
   html+='<div class="lblegend">Pts = earned · Back = behind leader · Correct = right of decided · Max = best possible final score · Left = points still earnable from live picks · Win % = estimated chance to win the pool (simple model from each bracket\'s ceiling, updates as games finish). Tap a name to view.</div>';
   host.innerHTML=html;
+  renderDateGames();
 }
-function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+// ---- DATE SECTION: all games on a date, each person's pick + points ----
+// distinct R32 dates in chronological order (later rounds added as they get specific dates)
+function dateList(){
+  const seen=[]; 
+  for(const s of R32_SCHED){ if(!seen.includes(s[0])) seen.push(s[0]); }
+  return seen;
+}
+let dateIdx=0; // which date is showing
+
+function gamesOnDate(date){
+  // returns [{r:0, mi, time, city}] for R32 games on that date
+  const out=[];
+  R32_SCHED.forEach((s,mi)=>{ if(s[0]===date) out.push({r:0, mi, time:s[1], city:s[2]}); });
+  return out;
+}
+
+function cycleDate(delta){
+  const dates=dateList();
+  dateIdx=(dateIdx+delta+dates.length)%dates.length;
+  renderDateGames();
+}
+
+function renderDateGames(){
+  const host=document.getElementById('dateGames');
+  if(!host) return;
+  const dates=dateList();
+  if(dateIdx>=dates.length) dateIdx=0;
+  const date=dates[dateIdx];
+  const games=gamesOnDate(date);
+
+  let html='<div class="lbhead"><h3>Games by date</h3></div>';
+  html+='<div class="datenav">'
+    +`<button class="tool" onclick="cycleDate(-1)">‹ Prev</button>`
+    +`<span class="datelabel">${date} <span class="datecount">(${dateIdx+1}/${dates.length} · ${games.length} game${games.length===1?'':'s'})</span></span>`
+    +`<button class="tool" onclick="cycleDate(1)">Next ›</button>`
+    +'</div>';
+
+  if(entries.length===0){
+    html+='<div class="empty2">No brackets loaded — tap “Reload Hunt Family Brackets” to see picks per game.</div>';
+    host.innerHTML=html; return;
+  }
+
+  html+='<div class="dgames">';
+  for(const g of games){
+    const {r,mi}=g;
+    const ra=slotTeamIn(results,r,mi,'a'), rb=slotTeamIn(results,r,mi,'b');
+    const winner=results[r][mi].w;
+    const sc=scoreForMatch(r,mi);
+    const teamLabel=(c)=> c?`${T[c][1]} ${T[c][0]}`:'TBD';
+    let scoreStr='';
+    if(sc) scoreStr=` <span class="dg-score">${sc.gA}–${sc.gB}${sc.pen?` (${sc.pen.pA}–${sc.pen.pB}p)`:''}</span>`;
+
+    html+='<div class="dgame">';
+    html+=`<div class="dg-hdr"><span class="dg-time">${g.time}</span> · ${g.city}</div>`;
+    html+=`<div class="dg-match">${teamLabel(ra)} <span class="dg-vs">vs</span> ${teamLabel(rb)}${scoreStr}`
+        + (winner?` <span class="dg-adv">→ ${T[winner][1]} adv</span>`:'')
+        + '</div>';
+
+    // each person: who they picked for this game + points from that pick (earned + live from the team across their whole bracket)
+    const rows=entries.map(e=>{
+      const br=deserialize(e.code);
+      const pick=br[r][mi].w;                        // who they picked to win THIS match
+      const tp = pick ? teamPointsFor(e.code, pick) : null;  // total earned/live from that team in their bracket
+      return {name:e.name, pick, tp, winner};
+    });
+    // sort: correct picks first, then by live points desc
+    rows.sort((a,b)=>{
+      const ac=winner&&a.pick===winner?0:1, bc=winner&&b.pick===winner?0:1;
+      return ac-bc || ((b.tp?b.tp.live:0)-(a.tp?a.tp.live:0)) || a.name.localeCompare(b.name);
+    });
+
+    html+='<div class="dg-picks">';
+    html+='<div class="dg-head">'
+        +'<span class="dg-name">Person</span>'
+        +'<span class="dg-pick">Picked</span>'
+        +'<span class="dg-col">Earn</span>'
+        +'<span class="dg-col">Live</span>'
+        +'<span class="dg-col">Dead</span>'
+        +'</div>';
+    for(const row of rows){
+      let state='';
+      if(row.pick && winner){ state = row.pick===winner?'ok':'no'; }
+      const pickTxt = row.pick ? `${T[row.pick][1]} ${T[row.pick][0]}` : '<span class="muted">—</span>';
+      const e = row.tp ? row.tp.earned : 0;
+      const l = row.tp ? row.tp.live : 0;
+      const d = row.tp ? row.tp.dead : 0;
+      const eCell = e>0 ? `<span class="tnum earned">${e}</span>` : '<span class="tg-dash">–</span>';
+      const lCell = l>0 ? `<span class="tnum live">${l}</span>` : '<span class="tg-dash">–</span>';
+      const dCell = d>0 ? `<span class="tnum dead">${d}</span>` : '<span class="tg-dash">–</span>';
+      html+=`<div class="dg-row ${state}">`
+          +`<span class="dg-name">${escapeHtml(row.name)}</span>`
+          +`<span class="dg-pick">${pickTxt}</span>`
+          +`<span class="dg-col">${eCell}</span>`
+          +`<span class="dg-col">${lCell}</span>`
+          +`<span class="dg-col">${dCell}</span>`
+          +`</div>`;
+    }
+    html+='</div></div>';
+  }
+  html+='</div>';
+  html+='<div class="lblegend"><b>Picked</b> = who they chose to win this game · <b>Earn</b> = points that team has already banked · <b>Live</b> = points still possible if it keeps winning · <b>Dead</b> = points lost (team eliminated).</div>';
+  host.innerHTML=html;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function doPrint(){
   // The artifact runs in a sandboxed frame that blocks window.print(),
   // so build a standalone page and open it in a new tab which can print itself.
@@ -1336,6 +1747,11 @@ async function savePDF(){
   const scrollEl=document.querySelector('.scroll');
   const prevOverflow=scrollEl?scrollEl.style.overflow:'';
   if(scrollEl) scrollEl.style.overflow='visible';
+  // temporarily reveal both sections so html2canvas can capture them even if a tab hides one
+  const secB=document.getElementById('bracketSection'), secS=document.getElementById('standingsSection');
+  const pB=secB?secB.style.display:'', pS=secS?secS.style.display:'';
+  if(secB) secB.style.display='block';
+  if(secS) secS.style.display='block';
 
   try{
     const { jsPDF }=window.jspdf;
@@ -1347,7 +1763,9 @@ async function savePDF(){
     const stamp=new Date().toLocaleString();
 
     // helper: capture a node to an image and place it on a fresh page, scaled to fit
-    async function addNode(node, heading){
+    async function addNode(node, heading, firstPage){
+      if(!node) return;
+      if(!firstPage) pdf.addPage('a4','landscape');
       const canvas=await html2canvas(node,{scale:2,backgroundColor:'#ffffff',useCORS:true,
         windowWidth:node.scrollWidth, width:node.scrollWidth});
       const img=canvas.toDataURL('image/png');
@@ -1363,12 +1781,14 @@ async function savePDF(){
       pdf.addImage(img,'PNG',x,y,w,h);
     }
 
-    // page 1: the bracket
-    await addNode(document.getElementById('bracket'), title);
-    // page 2: the leaderboard (only if there are saved entries)
-    if(entries.length){
-      pdf.addPage('a4','landscape');
-      await addNode(document.getElementById('leaderboard'), 'Leaderboard — '+title);
+    if(MODE==='standings'){
+      // Standings PDF: leaderboard, then games-by-date
+      await addNode(document.getElementById('leaderboard'), 'Leaderboard — '+title, true);
+      await addNode(document.getElementById('dateGames'), 'Games by Date — '+title, false);
+    } else {
+      // Bracket PDF: the bracket, then leaderboard if there are entries
+      await addNode(document.getElementById('bracket'), title, true);
+      if(entries.length) await addNode(document.getElementById('leaderboard'), 'Leaderboard — '+title, false);
     }
 
     const safe=who.replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'')||'bracket';
@@ -1378,6 +1798,8 @@ async function savePDF(){
     flash('⚠ PDF failed to generate. Try again.');
   }finally{
     if(scrollEl) scrollEl.style.overflow=prevOverflow;
+    if(secB) secB.style.display=pB;
+    if(secS) secS.style.display=pS;
     themeStyle.remove();
   }
 }
@@ -1397,8 +1819,13 @@ function autofill(){
 (async function init(){
   await loadAll();          // loads saved entries + persisted results (seeds Canada win)
   await maybeSeedHuntFamily(); // first open with empty storage -> load Hunt Family brackets
-  setMode('edit');          // sets toolbars, tabs, and renders
-  syncResults(false);       // auto-sync actual results in the background on open
+  // LOCKED VIEW-ONLY BUILD: default to Actual Results (Create/Edit is disabled).
+  // For an editable version, change this back to setMode('edit').
+  setMode('results');       // sets toolbars, tabs, and renders
+  syncResults(false);       // initial background sync on open
+  // auto-sync every 15 seconds (the feed itself updates ~daily, so this just
+  // catches any update promptly; manual Sync buttons removed)
+  setInterval(()=>{ syncResults(false); }, 15000);
 })();
 </script>
 </body>
