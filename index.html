@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Cup 2026 Bracket</title>
+<style>
+  :root{
+    --bg:#0a1929; --panel:#0f2438; --line:#27496b; --ink:#e8eef6;
+    --gold:#f5c518; --pick:#1f6feb; --pick2:#2ea043;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(160deg,#08131f,#0a1929 60%,#10263b);
+    color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  header{padding:18px 20px 6px;text-align:center}
+  h1{margin:0;font-size:22px;letter-spacing:.5px}
+  h1 .yr{color:var(--gold)}
+  .sub{font-size:12.5px;color:#9bb3cc;margin-top:4px}
+  .bar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0 6px}
+  button.tool{background:var(--panel);color:var(--ink);border:1px solid var(--line);
+    border-radius:8px;padding:7px 13px;font-size:12.5px;cursor:pointer}
+  button.tool:hover{border-color:var(--gold)}
+  .scroll{overflow-x:auto;padding:10px 14px 30px}
+  .bracket{display:flex;gap:14px;min-width:1560px;align-items:stretch}
+  .col{display:flex;flex-direction:column;flex:1;min-width:178px}
+  .colbody{display:flex;flex-direction:column;flex:1}
+  .rndlabel{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7d96b3;
+    text-align:center;margin-bottom:6px;font-weight:600;height:16px;flex:none}
+  /* each match grows to claim its vertical share, then centers its card */
+  .match{flex:1 1 0;display:flex;flex-direction:column;justify-content:center}
+  /* a boxed card groups the two opponents into one clear matchup */
+  .matchcard{position:relative;background:#0d2236;border:1px solid #25425f;border-radius:10px;
+    padding:0 6px 6px;margin:9px 0 6px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+  .matchcard .mpill{display:block;text-align:center;background:#15304a;
+    color:#9fb8d4;font-size:9px;font-weight:700;letter-spacing:.2px;
+    margin:0 -6px 6px;padding:4px 8px;border-bottom:1px solid #25425f;
+    border-radius:10px 10px 0 0;line-height:1.35;white-space:normal}
+  .vsdiv{display:flex;align-items:center;justify-content:center;height:0;position:relative;margin:1px 0}
+  .vsdiv span{font-size:8.5px;font-weight:800;color:#65809d;background:#0d2236;
+    padding:0 6px;text-transform:uppercase;letter-spacing:1px;position:relative;z-index:1}
+  .vsdiv::before{content:'';position:absolute;left:8px;right:8px;top:50%;height:1px;background:#23405d}
+  .slot{display:flex;align-items:center;gap:7px;background:var(--panel);
+    border:1px solid var(--line);border-left:4px solid var(--cc,#3a567a);
+    border-radius:7px;padding:6px 8px;margin:0;cursor:pointer;
+    transition:.12s;min-height:34px;user-select:none}
+  .slot:hover{background:#16314b}
+  .slot.win{background:#143726;border-color:var(--pick2);box-shadow:0 0 0 1px var(--pick2) inset}
+  .slot.empty{opacity:.55;cursor:default}
+  .flag{font-size:16px;line-height:1;width:22px;text-align:center;flex:0 0 auto}
+  .nm{font-size:12px;font-weight:600;line-height:1.15;text-align:left;
+    flex:1 1 auto;min-width:0;
+    white-space:normal;overflow-wrap:break-word;word-break:normal;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .seed{font-size:9.5px;color:#7d96b3;margin-left:6px;flex:0 0 auto;font-weight:600;
+    background:#13283f;padding:1px 5px;border-radius:4px;border:1px solid #25425f}
+  .goals{font-size:13px;font-weight:800;color:#9fb3c9;flex:0 0 auto;margin-left:6px;
+    min-width:14px;text-align:right;font-variant-numeric:tabular-nums}
+  .goals.gwin{color:#fff}
+  .goals .pen{font-size:9px;font-weight:700;color:#f2cf4f;margin-left:1px}
+  .champ{display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:210px}
+  .champbody{justify-content:center !important;align-items:stretch;flex:1}
+  .finalmatch{width:100%;margin-bottom:4px;flex:0 0 auto}
+  .finalcard{border-color:var(--gold);background:#16261c}
+  .finalcard .mpill{background:var(--gold);color:#0a1929;border-bottom-color:#caa408;font-weight:800}
+  .trophy{font-size:38px;filter:drop-shadow(0 4px 10px rgba(245,197,24,.4));margin:6px 0 2px}
+  .champbox{background:linear-gradient(160deg,#1a2f1f,#13261a);border:2px solid var(--gold);
+    border-radius:12px;padding:12px 16px;text-align:center;width:100%}
+  .champbox .lab{font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase}
+  .champbox .who{font-size:18px;font-weight:700;margin-top:6px;min-height:24px}
+  .champbox .wf{font-size:30px}
+  .note{font-size:11px;color:#7d96b3;text-align:center;padding:0 16px 24px}
+  .legend{font-size:11px;color:#9bb3cc;text-align:center;margin-top:2px}
+  .scorebar{display:flex;align-items:baseline;justify-content:center;gap:8px;
+    margin:6px auto 2px;padding:6px 16px;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;width:max-content;max-width:92vw;flex-wrap:wrap}
+  .pts{font-size:24px;font-weight:800;color:var(--gold);line-height:1}
+  .ptslab{font-size:12px;color:#9bb3cc}
+  .rsplit{font-size:11.5px;color:#9bb3cc;margin-left:6px;white-space:nowrap}
+  /* results mode visuals */
+  body.results .slot{cursor:crosshair}
+  .slot.correct{outline:2px solid var(--gold);outline-offset:-2px}
+  .slot.wrong{opacity:.55}
+  .slot.actual{box-shadow:0 0 0 2px var(--gold) inset}
+  body.results .scorebar{border-color:var(--gold)}
+  button.tool.gold{border-color:var(--gold);color:var(--gold)}
+  .modeswitch{display:flex;gap:0;justify-content:center;margin:10px auto 4px;
+    width:max-content;max-width:94vw;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .mode{background:var(--panel);color:#9bb3cc;border:none;border-right:1px solid var(--line);
+    padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:.12s;white-space:nowrap}
+  .mode:last-child{border-right:none}
+  .mode:hover{background:#16314b;color:var(--ink)}
+  .mode.active{background:var(--gold);color:#0a1929}
+  .viewlab{font-size:12.5px;color:#9bb3cc;align-self:center}
+  .backupbar{border-top:1px dashed #25425f;margin-top:4px;padding-top:8px}
+  .pastelink{color:#6fb0ff;cursor:pointer;text-decoration:underline;font-size:11px}
+  .pastelink:hover{color:#9fc8ff}
+  .modal{position:fixed;inset:0;background:rgba(3,10,18,.78);z-index:1000;
+    display:flex;align-items:center;justify-content:center;padding:20px}
+  .modalbox{background:#0f2438;border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;width:min(560px,94vw);box-shadow:0 12px 40px rgba(0,0,0,.5)}
+  .modaltitle{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:4px}
+  .modalsub{font-size:12px;color:#9bb3cc;margin-bottom:12px;line-height:1.5}
+  .backuparea{width:100%;height:120px;background:#0b1c2e;color:#cfe2ff;border:1px solid var(--line);
+    border-radius:8px;padding:10px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;
+    resize:vertical;outline:none;word-break:break-all}
+  .backuparea:focus{border-color:var(--gold)}
+  .modalbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+  select.namefield{cursor:pointer;width:auto;min-width:160px}
+  body.viewing .slot{cursor:default}
+  .namefield{background:#0b1c2e;color:var(--ink);border:1px solid var(--line);
+    border-radius:8px;padding:7px 11px;font-size:12.5px;width:150px;outline:none}
+  .namefield:focus{border-color:var(--gold)}
+  .namefield::placeholder{color:#6b84a0}
+  .lb{max-width:1040px;margin:8px auto 0;padding:0 14px}
+  .lbhead{display:flex;align-items:baseline;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+  .lbhead h3{font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink);margin:0;font-weight:700}
+  .lbsub{font-size:11.5px;color:#8aa3bf}
+  .lbscroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+  .lbtable{width:100%;border-collapse:collapse;min-width:760px}
+  .lbtable thead th{position:sticky;top:0;background:#102740;color:#8aa3bf;text-transform:uppercase;
+    font-size:10px;letter-spacing:.6px;font-weight:700;text-align:left;padding:9px 10px;
+    border-bottom:1px solid var(--line);white-space:nowrap}
+  .lbtable td{padding:9px 10px;font-size:12.5px;border-bottom:1px solid #1b3450;vertical-align:middle}
+  .lbtable tbody tr:last-child td{border-bottom:none}
+  .lbtable tbody tr:hover{background:#13283f}
+  .lbtable tr.loaded{background:#15304a}
+  .lbtable tr.leaderrow{background:linear-gradient(90deg,rgba(245,197,24,.10),transparent 60%)}
+  .c-rank{width:54px}
+  .ranknum{font-weight:800;color:#9bb3cc;font-size:13px}
+  .ranknum.medal{font-size:17px}
+  .c-name{min-width:96px}
+  .lnk{color:#6fb0ff;cursor:pointer}
+  .lnk:hover{text-decoration:underline}
+  .lnk.strong{font-weight:700;font-size:13.5px;color:#cfe2ff}
+  .c-pts{width:56px}
+  .ptsbig{font-weight:800;color:var(--gold);font-size:15px}
+  .c-back{width:58px;font-size:12px;color:#8aa3bf}
+  .c-back.behind{color:#e0795a}
+  .lead{color:var(--gold);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  .c-correct{width:58px;font-weight:600;color:#cdd9e6}
+  .c-rounds{white-space:nowrap}
+  .pill{display:inline-block;font-size:9.5px;font-weight:700;padding:2px 5px;border-radius:5px;margin-right:3px;
+    letter-spacing:.3px;border:1px solid transparent}
+  .pill.full{background:rgba(46,160,67,.22);color:#5fd17e;border-color:rgba(46,160,67,.5)}
+  .pill.part{background:rgba(245,197,24,.15);color:#f2cf4f;border-color:rgba(245,197,24,.4)}
+  .pill.zero{background:rgba(192,57,43,.15);color:#e0795a;border-color:rgba(192,57,43,.4)}
+  .pill.off{background:#16293f;color:#566f8a}
+  .c-champ{min-width:120px}
+  .chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;white-space:nowrap}
+  .chip.alive{color:#cdd9e6}
+  .chip.out{color:#86979f;text-decoration:line-through;text-decoration-color:#c0392b}
+  .chip .x{font-size:9px;font-weight:800;color:#fff;background:#c0392b;padding:0 4px;border-radius:4px;
+    text-decoration:none;letter-spacing:.4px;margin-left:2px}
+  .muted{color:#566f8a}
+  .c-max{width:48px;text-align:center;color:#8aa3bf;font-weight:600}
+  .c-left{width:44px;text-align:center;color:#cdd9e6;font-weight:600}
+  .c-odds{width:96px}
+  .oddswrap{position:relative;height:18px;background:#13283f;border:1px solid #25425f;border-radius:5px;
+    overflow:hidden;min-width:78px}
+  .oddsbar{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#1f6feb,#2ea043);opacity:.55}
+  .oddstxt{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:800;color:#eaf2ff}
+  .c-act{width:170px;text-align:right;white-space:nowrap}
+  .mini-btn{background:#16314b;color:#cfe2ff;border:1px solid var(--line);border-radius:6px;
+    padding:4px 9px;font-size:11px;font-weight:600;cursor:pointer;margin-left:4px}
+  .mini-btn:hover{border-color:var(--gold);color:#fff}
+  .mini-btn.del{color:#e0795a}
+  .mini-btn.del.arm{background:#c0392b;color:#fff;border-color:#c0392b}
+  .lblegend{font-size:10.5px;color:#7d96b3;text-align:center;margin:7px 4px 0;line-height:1.5}
+  .empty2{text-align:center;color:#8aa3bf;font-size:12.5px;padding:16px;line-height:1.6}
+  @media(max-width:700px){.sub{font-size:11px}}
+  @media print{
+    @page{size:landscape;margin:8mm}
+    body{background:#fff !important;color:#000 !important}
+    .bar,.note,.legend,.modeswitch,.scorebar,.lblegend,.c-act{display:none !important}
+    .scroll{overflow:visible !important;padding:0}
+    .bracket{min-width:0 !important;width:100%;gap:8px}
+    .col{min-width:0 !important}
+    h1{color:#000 !important;font-size:16px}
+    h1 .yr{color:#b8860b !important}
+    .slot{background:#fff !important;border-color:#999 !important;
+      print-color-adjust:exact;-webkit-print-color-adjust:exact}
+    .matchcard{background:#fff !important;border-color:#bbb !important;
+      print-color-adjust:exact;-webkit-print-color-adjust:exact}
+    .mpill{background:#eee !important;color:#333 !important;border-bottom-color:#bbb !important}
+    .vsdiv span{background:#fff !important;color:#999 !important}
+    .slot.win{background:#d8f0dd !important}
+    .nm{color:#000 !important}
+    .goals{color:#000 !important}
+    .goals .pen{color:#9a7b00 !important}
+    .seed{background:#eee !important;color:#333 !important;border-color:#bbb !important;
+      print-color-adjust:exact;-webkit-print-color-adjust:exact}
+    .champbox{background:#f4f9f4 !important}
+    .lb{max-width:none}
+    .lbscroll{border:1px solid #999 !important;overflow:visible !important}
+    .lbtable{min-width:0 !important}
+    .lbtable thead th{background:#eee !important;color:#000 !important}
+    .lbtable td,.lbhead h3,.lbsub,.ptsbig,.lnk.strong,.c-correct,.c-back,.c-max,.chip.alive{color:#000 !important}
+    .ptsbig{color:#7a5c00 !important}
+    .pill{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+<header>
+  <h1>FIFA World Cup <span class="yr">2026</span> — Knockout Bracket</h1>
+
+  <div class="modeswitch">
+    <button class="mode" id="m-results" onclick="setMode('results')">🏁 Actual Results</button>
+    <button class="mode" id="m-edit" onclick="setMode('edit')">✏️ Create / Edit</button>
+    <button class="mode" id="m-view" onclick="setMode('view')">👁 View Saved</button>
+  </div>
+
+  <div class="sub" id="editingLine"></div>
+
+  <!-- controls for CREATE/EDIT mode -->
+  <div class="bar" id="editBar">
+    <button class="tool" onclick="reset()">↺ Clear picks</button>
+    <button class="tool" onclick="autofill()">🎲 Random fill</button>
+    <input id="nameInput" class="namefield" type="text" maxlength="24"
+      placeholder="Name (e.g. Taylor)" onkeydown="if(event.key==='Enter')saveEntry()">
+    <button class="tool gold" onclick="saveEntry()">💾 Save bracket</button>
+    <button class="tool" onclick="savePDF()">📄 Save PDF</button>
+    <button class="tool" onclick="doPrint()">🖨 Print</button>
+  </div>
+
+  <!-- controls for ACTUAL RESULTS mode (fully automatic) -->
+  <div class="bar" id="resultsBar" style="display:none">
+    <button class="tool gold" onclick="syncResults(true)">🔄 Sync now</button>
+    <span class="viewlab" id="syncStamp"></span>
+    <button class="tool" onclick="savePDF()">📄 Save PDF</button>
+    <button class="tool" onclick="doPrint()">🖨 Print</button>
+  </div>
+
+  <!-- controls for VIEW SAVED mode -->
+  <div class="bar" id="viewBar" style="display:none">
+    <span class="viewlab">Viewing:</span>
+    <select id="viewSelect" class="namefield" onchange="viewSelected()"></select>
+    <button class="tool" onclick="editFromView()">✏️ Edit this bracket</button>
+    <button class="tool" onclick="savePDF()">📄 Save PDF</button>
+    <button class="tool" onclick="doPrint()">🖨 Print</button>
+  </div>
+
+  <!-- always-visible backup bar: the portable safety net for saved brackets -->
+  <div class="bar backupbar">
+    <button class="tool gold" onclick="loadHuntFamily()">👨‍👩‍👦 Hunt Family Brackets</button>
+    <span class="viewlab">·</span>
+    <button class="tool" onclick="exportFile()">⬆️ Export to file</button>
+    <button class="tool" onclick="importFile()">⬇️ Import from file</button>
+    <input id="importPicker" type="file" accept=".json,application/json,.txt" style="display:none" onchange="onImportFile(event)">
+    <span class="viewlab" id="backupCount"></span>
+    <span class="viewlab pastelink" onclick="exportData()">paste code instead</span>
+  </div>
+
+  <div class="scorebar" id="scorebar">
+    <span class="pts" id="ptsTotal">0</span><span class="ptslab">/ 800 pts</span>
+    <span class="rsplit" id="rsplit"></span>
+  </div>
+  <div class="legend">Round of 32 → Round of 16 → Quarterfinals → Semifinals → Final · Scoring: R32 10 · R16 20 · QF 40 · SF 80 · Final 160 per correct pick</div>
+  <div class="legend" id="modehint"></div>
+</header>
+
+<div id="leaderboard" class="lb"></div>
+
+
+<div class="scroll">
+<div class="bracket" id="bracket"></div>
+</div>
+<div class="note">Bracket as confirmed after the group stage (June 28, 2026). Single elimination; final July 19 at MetLife Stadium.</div>
+
+<!-- backup modal -->
+<div id="backupModal" class="modal" style="display:none">
+  <div class="modalbox">
+    <div class="modaltitle" id="modalTitle">Backup</div>
+    <div class="modalsub" id="modalSub"></div>
+    <textarea id="backupText" class="backuparea" spellcheck="false" placeholder="Paste a backup code here…"></textarea>
+    <div class="modalbtns">
+      <button class="tool gold" id="modalAction"></button>
+      <button class="tool" onclick="copyBackup()" id="copyBtn" style="display:none">📋 Copy</button>
+      <button class="tool" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- team data: name, flag emoji, brand color, seed label ----
+const T = {
+  RSA:["South Africa","🇿🇦","#007749","A2"], CAN:["Canada","🇨🇦","#d52b1e","B2"],
+  BRA:["Brazil","🇧🇷","#009c3b","C1"], JPN:["Japan","🇯🇵","#bc002d","F2"],
+  GER:["Germany","🇩🇪","#111111","E1"], PAR:["Paraguay","🇵🇾","#d52b1e","D3"],
+  NED:["Netherlands","🇳🇱","#ff6900","F1"], MAR:["Morocco","🇲🇦","#c1272d","C2"],
+  CIV:["Ivory Coast","🇨🇮","#f77f00","E2"], NOR:["Norway","🇳🇴","#ba0c2f","I2"],
+  FRA:["France","🇫🇷","#0055a4","I1"], SWE:["Sweden","🇸🇪","#006aa7","F3"],
+  MEX:["Mexico","🇲🇽","#006847","A1"], ECU:["Ecuador","🇪🇨","#ffd100","E3"],
+  ENG:["England","🏴󠁧󠁢󠁥󠁮󠁧󠁿","#cf142b","L1"], COD:["DR Congo","🇨🇩","#007fff","K3"],
+  BEL:["Belgium","🇧🇪","#fdda24","G1"], SEN:["Senegal","🇸🇳","#00853f","I3"],
+  USA:["United States","🇺🇸","#3c3b6e","D1"], BIH:["Bosnia & Herz.","🇧🇦","#002395","B3"],
+  ESP:["Spain","🇪🇸","#aa151b","H1"], AUT:["Austria","🇦🇹","#ed2939","J2"],
+  SUI:["Switzerland","🇨🇭","#d52b1e","B1"], ALG:["Algeria","🇩🇿","#006233","J3"],
+  POR:["Portugal","🇵🇹","#006600","K2"], CRO:["Croatia","🇭🇷","#ff0000","L2"],
+  AUS:["Australia","🇦🇺","#00843d","D2"], EGY:["Egypt","🇪🇬","#c8102e","G2"],
+  ARG:["Argentina","🇦🇷","#75aadb","J1"], CPV:["Cabo Verde","🇨🇻","#003893","H2"],
+  COL:["Colombia","🇨🇴","#ffcd00","K1"], GHA:["Ghana","🇬🇭","#006b3f","L3"],
+};
+
+// ---- map feed team names -> our codes (incl. likely aliases) ----
+const NAME2CODE = (()=>{
+  const m={};
+  const add=(code,...names)=>names.forEach(n=>m[n.toLowerCase().trim()]=code);
+  add('RSA','South Africa'); add('CAN','Canada');
+  add('BRA','Brazil'); add('JPN','Japan');
+  add('GER','Germany'); add('PAR','Paraguay');
+  add('NED','Netherlands'); add('MAR','Morocco');
+  add('CIV','Ivory Coast','Côte d’Ivoire',"Cote d'Ivoire",'Cote d Ivoire');
+  add('NOR','Norway'); add('FRA','France'); add('SWE','Sweden');
+  add('MEX','Mexico'); add('ECU','Ecuador');
+  add('ENG','England'); add('COD','DR Congo','Congo DR','Congo','Democratic Republic of the Congo','DR Congo (Kinshasa)');
+  add('BEL','Belgium'); add('SEN','Senegal');
+  add('USA','United States','USA','United States of America');
+  add('BIH','Bosnia and Herzegovina','Bosnia & Herzegovina','Bosnia-Herzegovina');
+  add('ESP','Spain'); add('AUT','Austria');
+  add('SUI','Switzerland'); add('ALG','Algeria');
+  add('POR','Portugal'); add('CRO','Croatia');
+  add('AUS','Australia'); add('EGY','Egypt');
+  add('ARG','Argentina'); add('CPV','Cabo Verde','Cape Verde');
+  add('COL','Colombia'); add('GHA','Ghana');
+  return m;
+})();
+function codeFromName(n){ return n? (NAME2CODE[String(n).toLowerCase().trim()]||null) : null; }
+// Order arranged so winners feed correctly into R16 per FIFA bracket halves.
+const R32 = [
+  // LEFT HALF
+  ["RSA","CAN"], ["BRA","JPN"],
+  ["GER","PAR"], ["NED","MAR"],
+  ["CIV","NOR"], ["FRA","SWE"],
+  ["MEX","ECU"], ["ENG","COD"],
+  // RIGHT HALF
+  ["BEL","SEN"], ["USA","BIH"],
+  ["ESP","AUT"], ["SUI","ALG"],
+  ["POR","CRO"], ["AUS","EGY"],
+  ["ARG","CPV"], ["COL","GHA"],
+];
+
+// ---- R32 schedule (confirmed), aligned 1:1 with the R32 array order above ----
+// [date, kickoff ET, city]
+const R32_SCHED = [
+  ["Jun 28","3:00p","Los Angeles, CA"],
+  ["Jun 29","1:00p","Houston, TX"],
+  ["Jun 29","4:30p","Boston, MA"],
+  ["Jun 29","9:00p","Monterrey, MEX"],
+  ["Jun 30","1:00p","Dallas, TX"],
+  ["Jun 30","5:00p","New York, NJ"],
+  ["Jun 30","9:00p","Mexico City, MEX"],
+  ["Jul 1","12:00p","Atlanta, GA"],
+  ["Jul 1","4:00p","Seattle, WA"],
+  ["Jul 1","8:00p","San Francisco, CA"],
+  ["Jul 2","3:00p","Los Angeles, CA"],
+  ["Jul 2","6:00p","Vancouver, CAN"],
+  ["Jul 2","9:00p","Toronto, CAN"],
+  ["Jul 3","1:00p","Dallas, TX"],
+  ["Jul 3","5:00p","Miami, FL"],
+  ["Jul 3","9:00p","Kansas City, MO"],
+];
+// later-round dates are fixed by FIFA even though teams aren't known yet
+const ROUND_INFO = {
+  1:{label:"Round of 16", window:"Jul 4–7"},
+  2:{label:"Quarterfinal", window:"Jul 9–11"},
+  3:{label:"Semifinal", window:"Jul 14–15"},
+  4:{label:"Final", window:"Jul 19 · New York, NJ"},
+};
+// returns the header text for a match pill, given round r and match index mi
+function matchHeader(r,mi){
+  if(r===0){
+    const s=R32_SCHED[mi];
+    return s ? `${s[0]} · ${s[1]} · ${s[2]}` : 'Round of 32';
+  }
+  const info=ROUND_INFO[r];
+  return info ? `${info.label} · ${info.window}` : '';
+}
+
+// rounds[r] = array of matches; each match = {a,b,winner}
+let rounds = [];   // the working PICKS bracket (Create/Edit canvas)
+let results = [];  // the actual-results bracket (truth), persisted
+let MODE = 'edit'; // 'results' | 'edit' | 'view'
+let viewBracket = [];  // a viewed saved entry (read-only canvas)
+let viewId = null;
+const PTS=[10,20,40,80,160];
+
+function emptyBracket(){
+  const b=[R32.map(m=>({a:m[0],b:m[1],w:null}))];
+  for(let r=1;r<5;r++){
+    const prev=b[r-1], cur=[];
+    for(let i=0;i<prev.length;i+=2) cur.push({a:null,b:null,w:null});
+    b.push(cur);
+  }
+  return b;
+}
+function build(){ rounds=emptyBracket(); results=emptyBracket(); }
+build();
+
+// ---- serialization: a bracket's winners flattened to a string of codes ----
+function serialize(br){
+  const out=[];
+  for(let r=0;r<5;r++) for(let mi=0;mi<br[r].length;mi++) out.push(br[r][mi].w||'');
+  return out.join('|');
+}
+function deserialize(str){
+  const br=emptyBracket();
+  if(!str) return br;
+  const parts=str.split('|'); let k=0;
+  for(let r=0;r<5;r++) for(let mi=0;mi<br[r].length;mi++){
+    const v=parts[k++]; if(v) br[r][mi].w=v;
+  }
+  return br;
+}
+
+// ---- persistent storage (artifact storage API; falls back to in-memory) ----
+const HAS_STORE = (typeof window!=='undefined' && window.storage && window.storage.set);
+const memStore={};
+async function storeGet(key){
+  if(!HAS_STORE) return (key in memStore)?memStore[key]:null;
+  try{ const r=await window.storage.get(key,false); return r?JSON.parse(r.value):null; }
+  catch(e){ return null; }
+}
+async function storeSet(key,val){
+  if(!HAS_STORE){ memStore[key]=val; return; }
+  try{ await window.storage.set(key,JSON.stringify(val),false); }catch(e){}
+}
+
+let entries=[];  // [{id,name,code,flag,bracket(serialized)}]
+let SCORES={};   // "C1|C2" (sorted) -> {c1,c2,g1,g2,pen,kind}  actual scorelines
+
+async function loadAll(){
+  const e=await storeGet('wc:entries'); entries = Array.isArray(e)?e:[];
+  const rs=await storeGet('wc:results');
+  results = deserialize(rs|| seedResults());
+  if(!rs) await storeSet('wc:results', serialize(results)); // persist seed once
+  const sc=await storeGet('wc:scores'); SCORES = (sc&&typeof sc==='object')?sc:seedScores();
+  if(!sc) await storeSet('wc:scores', SCORES);
+  renderLeaderboard();
+  updateBackupCount();
+}
+
+// pre-seed the actual results with games already finished (as of June 29, 2026)
+function seedResults(){
+  const b=emptyBracket();
+  // R32 match index 0 = South Africa vs Canada -> Canada won 1-0 (June 28)
+  b[0][0].w='CAN';
+  return serialize(b);
+}
+// matching scoreline for the seeded game: Canada 1–0 South Africa
+function seedScores(){
+  const key=['CAN','RSA'].sort().join('|');
+  const s={}; s[key]={c1:'CAN',c2:'RSA',g1:1,g2:0,pen:null,kind:'FT'};
+  return s;
+}
+
+// ---- LIVE SYNC: pull finished knockout results from the open data feed ----
+const FEED_URLS=[
+  // openfootball raw + CDN mirrors (CC0 public-domain data, ~daily updates)
+  'https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json',
+  'https://cdn.jsdelivr.net/gh/openfootball/worldcup.json@master/2026/worldcup.json',
+  'https://cdn.statically.io/gh/openfootball/worldcup.json/master/2026/worldcup.json',
+  'https://raw.githack.com/openfootball/worldcup.json/master/2026/worldcup.json',
+  // generic CORS proxy as a last resort (wraps the raw github file)
+  'https://corsproxy.io/?url=' + encodeURIComponent('https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json'),
+  'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json')
+];
+let lastSync=null, syncing=false;
+
+// decide the winner code of a finished feed match, or null if not finished/parsable
+function feedWinner(match){
+  const s=match.score; if(!s) return null;
+  const c1=codeFromName(match.team1), c2=codeFromName(match.team2);
+  if(!c1||!c2) return null;                       // not a knockout match we track
+  // penalties decide first, then extra time, then full time
+  let arr = s.p || s.et || s.ft;
+  if(!arr || arr.length<2 || arr[0]==null || arr[1]==null) return null;
+  if(arr[0]===arr[1]) return null;                // shouldn't happen in knockouts w/o p[]
+  return arr[0]>arr[1] ? c1 : c2;
+}
+
+// extract a displayable score for a finished match, keyed by team codes
+// returns {c1,c2, g1,g2, pen:[p1,p2]|null, kind:'FT'|'AET'} or null
+function feedScore(match){
+  const s=match.score; if(!s) return null;
+  const c1=codeFromName(match.team1), c2=codeFromName(match.team2);
+  if(!c1||!c2) return null;
+  // the regulation/extra-time scoreline (et includes the 90' goals in this feed's convention,
+  // but to be safe prefer ft for the headline number, then note penalties separately)
+  const base = s.et || s.ft;
+  if(!base || base[0]==null || base[1]==null) return null;
+  const pen = (s.p && s.p[0]!=null && s.p[1]!=null) ? [s.p[0], s.p[1]] : null;
+  return { c1, c2, g1:base[0], g2:base[1], pen, kind: s.et?'AET':'FT' };
+}
+
+// apply finished results into a fresh results bracket, round by round (R32 first so R16 slots populate)
+function applyFeed(matches){
+  const b=emptyBracket();
+  const winners={}; // "C1|C2" (sorted) -> winnerCode
+  const scores={};  // "C1|C2" (sorted) -> score object (with codes so we know orientation)
+  for(const mt of matches){
+    const w=feedWinner(mt);
+    if(!w) continue;
+    const c1=codeFromName(mt.team1), c2=codeFromName(mt.team2);
+    const key=[c1,c2].sort().join('|');
+    winners[key]=w;
+    const sc=feedScore(mt); if(sc) scores[key]=sc;
+  }
+  let applied=0;
+  for(let r=0;r<5;r++){
+    for(let mi=0;mi<b[r].length;mi++){
+      const a=slotTeamIn(b,r,mi,'a'), bb=slotTeamIn(b,r,mi,'b');
+      if(!a||!bb) continue;
+      const key=[a,bb].sort().join('|');
+      if(winners[key]){ b[r][mi].w=winners[key]; applied++; }
+    }
+  }
+  return {bracket:b, applied, scores};
+}
+
+async function syncResults(manual){
+  if(syncing) return;
+  syncing=true;
+  if(manual) flash('Syncing results…');
+  let data=null, ok=false;
+  for(const url of FEED_URLS){
+    try{
+      const ctrl=new AbortController();
+      const timer=setTimeout(()=>ctrl.abort(), 6000); // 6s per mirror
+      const res=await fetch(url,{cache:'no-store',signal:ctrl.signal});
+      clearTimeout(timer);
+      if(res.ok){
+        const txt=await res.text();
+        try{ data=JSON.parse(txt); }catch(e){ continue; } // skip non-JSON proxy errors
+        if(data && Array.isArray(data.matches)){ ok=true; break; }
+      }
+    }catch(e){ /* try next mirror */ }
+  }
+  syncing=false;
+  if(!ok || !data || !Array.isArray(data.matches)){
+    if(manual){
+      flash('⚠ Sync blocked here (sandbox network limit). Scores still update in the downloaded/PDF copy. Tap Sync now to retry.');
+      // also surface a persistent hint in the mode line
+      const hint=document.getElementById('modehint');
+      if(hint) hint.textContent='Live sync can be blocked inside this preview frame. If it keeps failing, results still load when you open the downloaded HTML file in a browser. Already-recorded games (e.g. Canada) stay shown regardless.';
+    }
+    return false;
+  }
+  const {bracket,applied,scores}=applyFeed(data.matches);
+  // never lose the known seed: ensure Canada R32 if feed somehow lacks it
+  if(!bracket[0][0].w){ const seed=deserialize(seedResults()); bracket[0][0].w=seed[0][0].w; }
+  results=bracket;
+  // merge scores: prefer freshly-fetched, but keep the seed if feed lacks it
+  SCORES = Object.keys(scores).length ? scores : SCORES;
+  const ck=['CAN','RSA'].sort().join('|');
+  if(!SCORES[ck]) Object.assign(SCORES, seedScores());
+  await persistResults();
+  await storeSet('wc:scores', SCORES);
+  lastSync=new Date();
+  render(); renderLeaderboard();
+  updateSyncStamp();
+  if(manual) flash('Results synced ✓ ('+applied+' knockout game'+(applied===1?'':'s')+' recorded)');
+  return true;
+}
+
+function updateSyncStamp(){
+  const el=document.getElementById('syncStamp');
+  if(!el) return;
+  if(!lastSync){ el.textContent=''; return; }
+  const t=lastSync.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  el.textContent='Last synced '+t;
+}
+
+// generic slot resolver against a given bracket
+function slotTeamIn(br,r,mi,side){
+  if(r===0) return br[0][mi][side];
+  const child = side==='a' ? mi*2 : mi*2+1;
+  return br[r-1][child].w;
+}
+function slotTeam(r,mi,side){ return slotTeamIn(activeBracket(),r,mi,side); }
+
+function activeBracket(){
+  if(MODE==='results') return results;
+  if(MODE==='view') return viewBracket;
+  return rounds; // edit
+}
+
+function pick(r,mi,side){
+  if(MODE!=='edit') return;             // results = auto-synced, view = read-only
+  const br=rounds;
+  const code = slotTeamIn(br,r,mi,side);
+  if(!code) return;
+  const m=br[r][mi];
+  m.w = (m.w===code)? null : code;
+  clearDownstreamIn(br,r,mi);
+  render(); renderLeaderboard();
+}
+function clearDownstreamIn(br,r,mi){
+  let cr=r, ci=mi;
+  while(cr<4){
+    const pr=cr+1, pi=Math.floor(ci/2);
+    const parent=br[pr][pi];
+    const a=slotTeamIn(br,pr,pi,'a'), b=slotTeamIn(br,pr,pi,'b');
+    if(parent.w && parent.w!==a && parent.w!==b){ parent.w=null; }
+    cr=pr; ci=pi;
+  }
+}
+
+function setMode(m){
+  MODE=m;
+  // toolbar visibility
+  document.getElementById('editBar').style.display    = (m==='edit')   ?'flex':'none';
+  document.getElementById('resultsBar').style.display = (m==='results')?'flex':'none';
+  document.getElementById('viewBar').style.display    = (m==='view')   ?'flex':'none';
+  // active tab styling
+  ['results','edit','view'].forEach(k=>{
+    document.getElementById('m-'+k).classList.toggle('active', k===m);
+  });
+  // body class drives result-highlight styling only in results mode
+  document.body.classList.toggle('results', m==='results');
+  document.body.classList.toggle('viewing', m==='view');
+
+  if(m==='results'){
+    document.getElementById('editingLine').textContent='ACTUAL RESULTS — these update automatically from live data. Tap 🔄 Sync now to refresh. This is what everyone is scored against.';
+    document.getElementById('modehint').textContent='Source updates roughly daily (not second-by-second). Saved brackets re-score automatically.';
+    updateSyncStamp();
+    syncResults(false);   // refresh on entering the tab
+  } else if(m==='edit'){
+    document.getElementById('editingLine').textContent='CREATE / EDIT — tap teams to advance them, type a name, then Save. Winners flow to the next round automatically.';
+    document.getElementById('modehint').textContent='';
+  } else { // view
+    document.getElementById('editingLine').textContent='VIEW SAVED — pick a bracket below to view it read-only. Its score against current actual results is shown.';
+    document.getElementById('modehint').textContent='';
+    populateViewSelect();
+  }
+  render(); renderLeaderboard();
+}
+async function persistResults(){ await storeSet('wc:results', serialize(results)); }
+
+// score a serialized pick bracket against the actual results bracket, with rich stats
+function scoreBracket(pickSerialized){
+  const pb=deserialize(pickSerialized);
+  let total=0;
+  const per=[0,0,0,0,0];        // points earned per round
+  const hit=[0,0,0,0,0];        // correct picks per round
+  const decided=[0,0,0,0,0];    // how many of this bracket's matches are decided in results
+  let maxRemaining=0;           // points still earnable if every undecided pick of theirs hits
+  for(let r=0;r<5;r++) for(let mi=0;mi<pb[r].length;mi++){
+    const pw=pb[r][mi].w, aw=results[r][mi].w;
+    if(!pw) continue;            // they didn't pick this slot
+    if(aw){                      // result known
+      decided[r]++;
+      if(pw===aw){ total+=PTS[r]; per[r]+=PTS[r]; hit[r]++; }
+    } else {
+      // still possible to earn — but only if their pick is still alive in actual results.
+      // a pick is "alive" if they haven't already been knocked out in an earlier decided round.
+      if(isAlive(pw)) maxRemaining+=PTS[r];
+    }
+  }
+  // champion pick & whether still alive
+  const champ=pb[4][0].w||null;
+  const champAlive = champ ? isAlive(champ) : null;
+  const correct = hit.reduce((a,b)=>a+b,0);
+  const picksDecided = decided.reduce((a,b)=>a+b,0);
+  return {total,per,hit,decided,correct,picksDecided,maxRemaining,champ,champAlive};
+}
+// a team is "alive" in actual results if they never lost a decided match
+function isAlive(code){
+  for(let r=0;r<5;r++) for(let mi=0;mi<results[r].length;mi++){
+    const m=results[r][mi]; if(!m.w) continue;
+    const a=slotTeamIn(results,r,mi,'a'), b=slotTeamIn(results,r,mi,'b');
+    if((a===code||b===code) && m.w!==code) return false; // played and lost
+  }
+  return true;
+}
+// live score of the currently-edited picks bracket
+function computeScore(){ return scoreBracket(serialize(rounds)); }
+function updateScore(){
+  const scorebar=document.getElementById('scorebar');
+  const ptsEl=document.getElementById('ptsTotal');
+  const labEl=scorebar.querySelector('.ptslab');
+  const splitEl=document.getElementById('rsplit');
+  const names=['R32','R16','QF','SF','F'];
+
+  if(MODE==='results'){
+    // show how many actual results are recorded, not a score
+    const decided=results.flat().filter(m=>m.w).length;
+    ptsEl.textContent=decided;
+    labEl.textContent=' / 31 games recorded';
+    splitEl.textContent='Tap winners as matches finish — everyone is scored against this.';
+    return;
+  }
+  // edit or view: score the canvas bracket against actual results
+  const src = (MODE==='view') ? viewBracket : rounds;
+  const {total,per}=scoreBracket(serialize(src));
+  ptsEl.textContent=total;
+  labEl.textContent=' / 800 pts';
+  splitEl.textContent=names.map((n,i)=>`${n} ${per[i]}`).join(' · ');
+}
+
+const LABELS=["Round of 32","Round of 16","Quarterfinals","Semifinals","Final"];
+
+function render(){
+  const br=document.getElementById('bracket');
+  br.innerHTML='';
+  // We lay out: R32(L) R16(L) QF(L) SF(L) | FINAL | SF(R) QF(R) R16(R) R32(R)
+  const leftMatches = [ [0,0,8],[1,0,4],[2,0,2],[3,0,1] ]; // [round, startIndex, count]
+  const rightMatches= [ [0,8,8],[1,4,4],[2,2,2],[3,1,1] ];
+
+  // left columns r32->sf
+  for(let c=0;c<4;c++){
+    br.appendChild(col(LABELS[c], leftMatches[c][0], leftMatches[c][1], leftMatches[c][2]));
+  }
+  // champion center
+  br.appendChild(championCol());
+  // right columns sf->r32 (reversed)
+  for(let c=3;c>=0;c--){
+    br.appendChild(col(LABELS[c], rightMatches[c][0], rightMatches[c][1], rightMatches[c][2]));
+  }
+  updateScore();
+}
+
+function col(label, r, start, count){
+  const d=document.createElement('div'); d.className='col';
+  const lab=document.createElement('div'); lab.className='rndlabel'; lab.textContent=label;
+  d.appendChild(lab);
+  const body=document.createElement('div'); body.className='colbody';
+  for(let k=0;k<count;k++){
+    const mi=start+k;
+    body.appendChild(matchEl(r,mi));
+  }
+  d.appendChild(body);
+  return d;
+}
+
+function matchEl(r,mi){
+  const wrap=document.createElement('div'); wrap.className='match';
+  const card=document.createElement('div'); card.className='matchcard';
+
+  // header pill: date · time · venue (R32) or round · date window (later rounds)
+  const pill=document.createElement('div'); pill.className='mpill';
+  pill.textContent=matchHeader(r,mi);
+  card.appendChild(pill);
+
+  const sa=slotEl(r,mi,'a');
+  const sb=slotEl(r,mi,'b');
+  card.appendChild(sa);
+
+  const vs=document.createElement('div'); vs.className='vsdiv';
+  vs.innerHTML='<span>vs</span>';
+  card.appendChild(vs);
+
+  card.appendChild(sb);
+  wrap.appendChild(card);
+  return wrap;
+}
+
+// look up the actual scoreline for the match at (r,mi) in the ACTUAL results bracket,
+// returning goals oriented to {gA, gB} for this slot's two teams, plus pen/kind. null if none.
+function scoreForMatch(r,mi){
+  const a=slotTeamIn(results,r,mi,'a'), b=slotTeamIn(results,r,mi,'b');
+  if(!a||!b) return null;
+  const key=[a,b].sort().join('|');
+  const sc=SCORES[key]; if(!sc) return null;
+  // sc stores g1/g2 against sc.c1/sc.c2 — orient to this slot's a/b
+  const gA = (sc.c1===a)?sc.g1:sc.g2;
+  const gB = (sc.c1===a)?sc.g2:sc.g1;
+  let pA=null,pB=null;
+  if(sc.pen){ pA=(sc.c1===a)?sc.pen[0]:sc.pen[1]; pB=(sc.c1===a)?sc.pen[1]:sc.pen[0]; }
+  return {gA,gB,pen:sc.pen?{pA,pB}:null,kind:sc.kind};
+}
+
+function slotEl(r,mi,side){
+  const br=activeBracket();
+  const code = slotTeamIn(br,r,mi,side);
+  const el=document.createElement('div');
+  el.className='slot'+(code?'':' empty');
+  if(code){
+    const [nm,fl,cc,sd]=T[code];
+    el.style.setProperty('--cc',cc);
+    if(br[r][mi].w===code) el.classList.add('win');
+
+    // scoring overlays: show in edit & view (compare canvas vs actual results)
+    if(MODE!=='results'){
+      const aw=results[r][mi].w;          // actual winner of this match
+      if(aw){                              // a real result exists
+        if(code===aw) el.classList.add('actual');           // highlight the true winner
+        if(br[r][mi].w===code){                              // this bracket picked this team
+          el.classList.add(code===aw?'correct':'wrong');
+        }
+      }
+    }
+
+    // actual scoreline: show this team's goals if the match has a final score
+    let scoreHTML='';
+    const sc=scoreForMatch(r,mi);
+    if(sc){
+      const mine = side==='a'?sc.gA:sc.gB;
+      const theirs = side==='a'?sc.gB:sc.gA;
+      const won = mine>theirs || (mine===theirs && sc.pen && ((side==='a'?sc.pen.pA:sc.pen.pB) > (side==='a'?sc.pen.pB:sc.pen.pA)));
+      let penTxt='';
+      if(sc.pen){ const myP=side==='a'?sc.pen.pA:sc.pen.pB; penTxt=`<span class="pen">(${myP})</span>`; }
+      scoreHTML=`<span class="goals ${won?'gwin':''}">${mine}${penTxt}</span>`;
+    }
+
+    el.innerHTML=`<span class="flag">${fl}</span><span class="nm">${nm}</span>${scoreHTML}<span class="seed">${sd}</span>`;
+    if(MODE==='edit') el.onclick=()=>pick(r,mi,side);   // results=auto, view=read-only
+  } else {
+    el.innerHTML=`<span class="flag">·</span><span class="nm" style="color:#5d7a99">—</span>`;
+  }
+  return el;
+}
+
+function championCol(){
+  const d=document.createElement('div'); d.className='col champ';
+  const final=activeBracket()[4][0];
+  const wcode=final.w;
+  const lab=document.createElement('div'); lab.className='rndlabel'; lab.textContent='Final';
+  d.appendChild(lab);
+  const body=document.createElement('div'); body.className='colbody champbody';
+
+  // the Final is round 4, match 0 — two clickable slots fed by the two semifinal winners
+  const finalMatch=document.createElement('div'); finalMatch.className='finalmatch';
+  const card=document.createElement('div'); card.className='matchcard finalcard';
+  const pill=document.createElement('div'); pill.className='mpill'; pill.textContent=matchHeader(4,0);
+  card.appendChild(pill);
+  card.appendChild(slotEl(4,0,'a'));
+  const vs=document.createElement('div'); vs.className='vsdiv'; vs.innerHTML='<span>vs</span>';
+  card.appendChild(vs);
+  card.appendChild(slotEl(4,0,'b'));
+  finalMatch.appendChild(card);
+  body.appendChild(finalMatch);
+
+  const tro=document.createElement('div'); tro.className='trophy'; tro.textContent='🏆';
+  body.appendChild(tro);
+  const box=document.createElement('div'); box.className='champbox';
+  if(wcode){
+    const [nm,fl,cc]=T[wcode];
+    box.innerHTML=`<div class="lab">World Cup Winner</div><div class="wf">${fl}</div><div class="who" style="color:${cc==='#111111'?'#fff':cc}">${nm}</div>`;
+  } else {
+    box.innerHTML=`<div class="lab">World Cup Winner</div><div class="wf">❔</div><div class="who" style="color:#7d96b3">TBD</div>`;
+  }
+  body.appendChild(box);
+  d.appendChild(body);
+  return d;
+}
+
+function reset(){          // Create/Edit mode: clear the working picks
+  rounds=emptyBracket();
+  loadedId=null;
+  document.getElementById('nameInput').value='';
+  render(); updateScore();
+}
+
+// ---- backup: export / import (the portable safety net) ----
+const BACKUP_VERSION=1;
+
+// ---- embedded Hunt Family brackets (baked into the file so they're always available) ----
+const HUNT_FAMILY_BACKUP='WC26-eyJ2IjoxLCJzYXZlZCI6IjIwMjYtMDYtMjlUMjE6NTU6NDcuNTU5WiIsImVudHJpZXMiOlt7ImlkIjoiZTE3ODI3Njk2OTEyNDA3Njg2MCIsIm5hbWUiOiJUYXlsb3IiLCJjb2RlIjoiQ0FOfEJSQXxHRVJ8TkVEfE5PUnxGUkF8TUVYfEVOR3xCRUx8VVNBfEVTUHxTVUl8UE9SfEFVU3xBUkd8Q09MfEJSQXxORUR8RlJBfEVOR3xCRUx8RVNQfFBPUnxBUkd8QlJBfEZSQXxFU1B8QVJHfEZSQXxBUkd8RlJBIiwiY2hhbXAiOiJGUkEifSx7ImlkIjoiZTE3ODI3Njk2OTEyNDAxNTE3OCIsIm5hbWUiOiJQcmVzdG9uIiwiY29kZSI6IkNBTnxCUkF8R0VSfE5FRHxOT1J8RlJBfE1FWHxFTkd8QkVMfFVTQXxFU1B8U1VJfFBPUnxBVVN8QVJHfENPTHxCUkF8R0VSfEZSQXxNRVh8QkVMfEVTUHxQT1J8QVJHfEdFUnxGUkF8RVNQfFBPUnxGUkF8UE9SfFBPUiIsImNoYW1wIjoiUE9SIn0seyJpZCI6ImUxNzgyNzY5NjkxMjQwMTMwMzEiLCJuYW1lIjoiQXZlcnkiLCJjb2RlIjoiQ0FOfEJSQXxHRVJ8TkVEfE5PUnxGUkF8TUVYfEVOR3xCRUx8VVNBfEVTUHxTVUl8UE9SfEFVU3xBUkd8Q09MfEJSQXxHRVJ8RlJBfE1FWHxCRUx8RVNQfFBPUnxBUkd8QlJBfEZSQXxFU1B8UE9SfEZSQXxFU1B8RVNQIiwiY2hhbXAiOiJFU1AifSx7ImlkIjoiZTE3ODI3Njk2OTEyNDA3OTA0OCIsIm5hbWUiOiJNb21teSIsImNvZGUiOiJDQU58QlJBfEdFUnxORUR8Tk9SfEZSQXxNRVh8RU5HfEJFTHxVU0F8RVNQfFNVSXxQT1J8QVVTfEFSR3xDT0x8QlJBfEdFUnxGUkF8TUVYfEJFTHxFU1B8UE9SfENPTHxCUkF8RlJBfEVTUHxQT1J8QlJBfFBPUnxCUkEiLCJjaGFtcCI6IkJSQSJ9LHsiaWQiOiJlMTc4Mjc2OTY5MTI0MDQ3NzAiLCJuYW1lIjoiRGFkZHkiLCJjb2RlIjoiQ0FOfEJSQXxHRVJ8TkVEfENJVnxGUkF8TUVYfEVOR3xCRUx8VVNBfEVTUHxTVUl8UE9SfEFVU3xBUkd8Q09MfEJSQXxHRVJ8RlJBfEVOR3xVU0F8RVNQfFBPUnxDT0x8QlJBfEVOR3xFU1B8Q09MfEVOR3xDT0x8RU5HIiwiY2hhbXAiOiJFTkcifV0sInJlc3VsdHMiOiJDQU58QlJBfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHwiLCJzY29yZXMiOnsiTUVYfFJTQSI6eyJjMSI6Ik1FWCIsImMyIjoiUlNBIiwiZzEiOjIsImcyIjowLCJwZW4iOm51bGwsImtpbmQiOiJGVCJ9LCJCSUh8U1VJIjp7ImMxIjoiU1VJIiwiYzIiOiJCSUgiLCJnMSI6NCwiZzIiOjEsInBlbiI6bnVsbCwia2luZCI6IkZUIn0sIkNBTnxTVUkiOnsiYzEiOiJTVUkiLCJjMiI6IkNBTiIsImcxIjoyLCJnMiI6MSwicGVuIjpudWxsLCJraW5kIjoiRlQifSwiUEFSfFVTQSI6eyJjMSI6IlVTQSIsImMyIjoiUEFSIiwiZzEiOjQsImcyIjoxLCJwZW4iOm51bGwsImtpbmQiOiJGVCJ9LCJBVVN8VVNBIjp7ImMxIjoiVVNBIiwiYzIiOiJBVVMiLCJnMSI6MiwiZzIiOjAsInBlbiI6bnVsbCwia2luZCI6IkZUIn0sIkNJVnxFQ1UiOnsiYzEiOiJDSVYiLCJjMiI6IkVDVSIsImcxIjoxLCJnMiI6MCwicGVuIjpudWxsLCJraW5kIjoiRlQifSwiQ0lWfEdFUiI6eyJjMSI6IkdFUiIsImMyIjoiQ0lWIiwiZzEiOjIsImcyIjoxLCJwZW4iOm51bGwsImtpbmQiOiJGVCJ9LCJFQ1V8R0VSIjp7ImMxIjoiRUNVIiwiYzIiOiJHRVIiLCJnMSI6MiwiZzIiOjEsInBlbiI6bnVsbCwia2luZCI6IkZUIn0sIk5FRHxTV0UiOnsiYzEiOiJORUQiLCJjMiI6IlNXRSIsImcxIjo1LCJnMiI6MSwicGVuIjpudWxsLCJraW5kIjoiRlQifSwiRlJBfFNFTiI6eyJjMSI6IkZSQSIsImMyIjoiU0VOIiwiZzEiOjMsImcyIjoxLCJwZW4iOm51bGwsImtpbmQiOiJGVCJ9LCJOT1J8U0VOIjp7ImMxIjoiTk9SIiwiYzIiOiJTRU4iLCJnMSI6MywiZzIiOjIsInBlbiI6bnVsbCwia2luZCI6IkZUIn0sIkZSQXxOT1IiOnsiYzEiOiJOT1IiLCJjMiI6IkZSQSIsImcxIjoxLCJnMiI6NCwicGVuIjpudWxsLCJraW5kIjoiRlQifSwiQUxHfEFSRyI6eyJjMSI6IkFSRyIsImMyIjoiQUxHIiwiZzEiOjMsImcyIjowLCJwZW4iOm51bGwsImtpbmQiOiJGVCJ9LCJBUkd8QVVUIjp7ImMxIjoiQVJHIiwiYzIiOiJBVVQiLCJnMSI6MiwiZzIiOjAsInBlbiI6bnVsbCwia2luZCI6IkZUIn0sIkNPRHxDT0wiOnsiYzEiOiJDT0wiLCJjMiI6IkNPRCIsImcxIjoxLCJnMiI6MCwicGVuIjpudWxsLCJraW5kIjoiRlQifSwiQ1JPfEVORyI6eyJjMSI6IkVORyIsImMyIjoiQ1JPIiwiZzEiOjQsImcyIjoyLCJwZW4iOm51bGwsImtpbmQiOiJGVCJ9LCJDUk98R0hBIjp7ImMxIjoiQ1JPIiwiYzIiOiJHSEEiLCJnMSI6MiwiZzIiOjEsInBlbiI6bnVsbCwia2luZCI6IkZUIn0sIkNBTnxSU0EiOnsiYzEiOiJSU0EiLCJjMiI6IkNBTiIsImcxIjowLCJnMiI6MSwicGVuIjpudWxsLCJraW5kIjoiRlQifSwiQlJBfEpQTiI6eyJjMSI6IkJSQSIsImMyIjoiSlBOIiwiZzEiOjIsImcyIjoxLCJwZW4iOm51bGwsImtpbmQiOiJGVCJ9fX0=';
+
+async function loadHuntFamily(){
+  try{
+    const data=decodeBackup(HUNT_FAMILY_BACKUP);
+    await applyBackup(data);
+    flash('Hunt Family brackets loaded ✓');
+  }catch(e){
+    flash('⚠ Could not load the Hunt Family brackets.');
+  }
+}
+
+// auto-load the Hunt Family brackets the first time the file is opened with empty storage
+async function maybeSeedHuntFamily(){
+  if(entries.length===0){
+    try{ await applyBackup(decodeBackup(HUNT_FAMILY_BACKUP)); }catch(e){}
+  }
+}
+
+function buildBackup(){
+  return {
+    v:BACKUP_VERSION,
+    saved:new Date().toISOString(),
+    entries:entries,                 // [{id,name,code,champ}]
+    results:serialize(results),      // actual-results bracket
+    scores:SCORES                    // scorelines
+  };
+}
+function encodeBackup(obj){
+  // JSON -> URI-safe base64 so it copy/pastes cleanly
+  const json=JSON.stringify(obj);
+  return 'WC26-'+btoa(unescape(encodeURIComponent(json)));
+}
+function decodeBackup(str){
+  let s=(str||'').trim();
+  if(s.startsWith('WC26-')) s=s.slice(5);
+  const json=decodeURIComponent(escape(atob(s)));
+  return JSON.parse(json);
+}
+
+function exportData(){
+  if(entries.length===0){ flash('No saved brackets to export yet.'); return; }
+  const code=encodeBackup(buildBackup());
+  const m=document.getElementById('backupModal');
+  document.getElementById('modalTitle').textContent='⬆️ Export — your backup code';
+  document.getElementById('modalSub').innerHTML='This code contains all '+entries.length+' saved bracket'+(entries.length===1?'':'s')+', plus current results. <b>Copy it and paste it somewhere safe</b> (a note, an email to yourself). To restore later — in any copy of this file — use Import and paste it back.';
+  const ta=document.getElementById('backupText');
+  ta.value=code; ta.readOnly=true;
+  document.getElementById('modalAction').style.display='none';
+  document.getElementById('copyBtn').style.display='';
+  m.style.display='flex';
+  ta.focus(); ta.select();
+}
+
+function openImport(){
+  const m=document.getElementById('backupModal');
+  document.getElementById('modalTitle').textContent='⬇️ Import — restore from a backup code';
+  document.getElementById('modalSub').innerHTML='Paste a backup code below and tap Import. This <b>merges</b> brackets by name (same name = updated), and refreshes saved results. Nothing is deleted.';
+  const ta=document.getElementById('backupText');
+  ta.value=''; ta.readOnly=false; ta.placeholder='Paste your WC26-… backup code here…';
+  const act=document.getElementById('modalAction');
+  act.style.display=''; act.textContent='⬇️ Import now'; act.onclick=doImport;
+  document.getElementById('copyBtn').style.display='none';
+  m.style.display='flex';
+  ta.focus();
+}
+
+// shared merge logic — takes a parsed backup object, merges into current state
+async function applyBackup(data){
+  if(!data || !Array.isArray(data.entries)){ flash('⚠ That backup has no brackets in it.'); return false; }
+  let added=0, updated=0;
+  for(const inc of data.entries){
+    if(!inc || !inc.name || !inc.code) continue;
+    const ex=entries.find(e=>e.name.toLowerCase()===inc.name.toLowerCase());
+    if(ex){ ex.code=inc.code; ex.champ=inc.champ; updated++; }
+    else { entries.push({id:'e'+Date.now()+Math.floor(Math.random()*100000), name:inc.name, code:inc.code, champ:inc.champ}); added++; }
+  }
+  await storeSet('wc:entries', entries);
+  if(typeof data.results==='string' && data.results){
+    const incResults=deserialize(data.results);
+    const incDecided=incResults.flat().filter(m=>m.w).length;
+    const curDecided=results.flat().filter(m=>m.w).length;
+    if(incDecided>=curDecided){ results=incResults; await persistResults(); }
+  }
+  if(data.scores && typeof data.scores==='object'){
+    SCORES=Object.assign({}, SCORES, data.scores);
+    await storeSet('wc:scores', SCORES);
+  }
+  render(); renderLeaderboard(); updateBackupCount();
+  flash(`Imported ✓ — ${added} added, ${updated} updated`);
+  return true;
+}
+
+// ---- FILE-based export/import (no copy-paste) ----
+function exportFile(){
+  if(entries.length===0){ flash('No saved brackets to export yet.'); return; }
+  const obj=buildBackup();
+  // store as readable JSON so it can also be opened in TextEdit if ever needed
+  const blob=new Blob([JSON.stringify(obj,null,2)], {type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const d=new Date();
+  const stamp=d.getFullYear()+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2);
+  a.href=url; a.download=`WC2026-brackets-${stamp}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 2000);
+  flash(`Exported ${entries.length} bracket${entries.length===1?'':'s'} to your Downloads ✓`);
+}
+function importFile(){
+  document.getElementById('importPicker').click();
+}
+async function onImportFile(ev){
+  const file=ev.target.files && ev.target.files[0];
+  ev.target.value=''; // allow re-picking the same file later
+  if(!file) return;
+  flash('Reading '+file.name+'…');
+  try{
+    const text=await file.text();
+    let data;
+    // accept both raw JSON files and WC26- encoded codes saved as .txt
+    try{ data=JSON.parse(text); }
+    catch(e){ data=decodeBackup(text); }
+    await applyBackup(data);
+  }catch(err){
+    flash('⚠ Could not read that file. Make sure it’s a WC2026 backup.');
+  }
+}
+
+async function doImport(){
+  const raw=document.getElementById('backupText').value;
+  let data;
+  try{ data=decodeBackup(raw); }
+  catch(e){ flash('⚠ That code could not be read. Check you copied all of it.'); return; }
+  if(await applyBackup(data)) closeModal();
+}
+
+function copyBackup(){
+  const ta=document.getElementById('backupText');
+  ta.select();
+  let done=false;
+  try{ done=document.execCommand('copy'); }catch(e){}
+  if(navigator.clipboard){ navigator.clipboard.writeText(ta.value).then(()=>{},()=>{}); done=true; }
+  flash(done?'Backup code copied ✓':'Select the code and copy it manually.');
+}
+function closeModal(){ document.getElementById('backupModal').style.display='none'; }
+function updateBackupCount(){
+  const el=document.getElementById('backupCount');
+  if(el) el.textContent = entries.length ? `${entries.length} bracket${entries.length===1?'':'s'} saved` : 'no brackets yet';
+}
+
+// ---- saved entries ----
+let loadedId=null;  // id of entry currently loaded into the working bracket (if any)
+
+async function saveEntry(){
+  if(MODE!=='edit'){ setMode('edit'); }
+  const filledR32 = rounds[0].filter(m=>m.w).length;
+  if(filledR32===0){ flash('⚠ Pick at least some winners before saving.'); return; }
+  const input=document.getElementById('nameInput');
+  const name=(input.value||'').trim();
+  if(!name){ input.focus(); flash('⚠ Type a name in the box, then tap Save.'); return; }
+  const champ = rounds[4][0].w;            // their predicted winner -> flag tag
+  const code = serialize(rounds);
+  const existing = entries.find(e=>e.name.toLowerCase()===name.toLowerCase());
+  if(existing){
+    existing.code=code; existing.champ=champ; loadedId=existing.id;
+    flash('Updated "'+name+'" ✓');
+  } else {
+    const id='e'+Date.now()+Math.floor(Math.random()*1000);
+    entries.push({id,name,code,champ}); loadedId=id;
+    flash('Saved "'+name+'" ✓');
+  }
+  input.value='';
+  await storeSet('wc:entries', entries);
+  renderLeaderboard(); updateBackupCount();
+}
+
+// load a saved entry into Create/Edit to modify it
+function editEntry(id){
+  const e=entries.find(x=>x.id===id); if(!e) return;
+  setMode('edit');
+  rounds=deserialize(e.code); loadedId=id;
+  document.getElementById('nameInput').value=e.name;  // prefill so re-save updates same person
+  render(); updateScore(); renderLeaderboard();
+  flash('Editing "'+e.name+'" — change picks, then tap Save to update.');
+}
+
+// ---- View Saved mode ----
+function populateViewSelect(){
+  const sel=document.getElementById('viewSelect');
+  if(entries.length===0){
+    sel.innerHTML='<option value="">— no saved brackets yet —</option>';
+    viewBracket=emptyBracket(); viewId=null; return;
+  }
+  const ranked=entries.map(e=>({e,s:scoreBracket(e.code).total})).sort((a,b)=>b.s-a.s);
+  sel.innerHTML=ranked.map(({e,s})=>`<option value="${e.id}">${escapeHtml(e.name)} — ${s} pts</option>`).join('');
+  // keep current selection if still valid, else first
+  if(!entries.find(e=>e.id===viewId)) viewId=ranked[0].e.id;
+  sel.value=viewId;
+  viewBracket=deserialize(entries.find(e=>e.id===viewId).code);
+}
+function viewSelected(){
+  const sel=document.getElementById('viewSelect');
+  viewId=sel.value;
+  const e=entries.find(x=>x.id===viewId);
+  viewBracket = e ? deserialize(e.code) : emptyBracket();
+  render(); updateScore();
+  if(e) flash('Viewing "'+e.name+'" (read-only). Score shown is vs current actual results.');
+}
+function editFromView(){
+  if(!viewId){ flash('Nothing to edit — no bracket selected.'); return; }
+  editEntry(viewId);
+}
+
+async function deleteEntry(id,ev){
+  if(ev) ev.stopPropagation();
+  const e=entries.find(x=>x.id===id); if(!e) return;
+  // two-tap delete: first tap arms, second confirms (no blocked confirm dialog)
+  if(pendingDel!==id){ pendingDel=id; renderLeaderboard(); flash('Tap ✕ again to delete "'+e.name+'".');
+    clearTimeout(delT); delT=setTimeout(()=>{pendingDel=null;renderLeaderboard();},3000); return; }
+  pendingDel=null;
+  entries=entries.filter(x=>x.id!==id);
+  if(loadedId===id){ loadedId=null; document.getElementById('nameInput').value=''; }
+  await storeSet('wc:entries', entries);
+  renderLeaderboard(); updateBackupCount();
+}
+let pendingDel=null, delT=null;
+
+let flashT=null;
+function defaultLine(){
+  if(MODE==='results') return 'ACTUAL RESULTS — these update automatically from live data. Tap 🔄 Sync now to refresh. This is what everyone is scored against.';
+  if(MODE==='view')    return 'VIEW SAVED — pick a bracket below to view it read-only. Its score against current actual results is shown.';
+  return 'CREATE / EDIT — tap teams to advance them, type a name, then Save. Winners flow to the next round automatically.';
+}
+function flash(msg){
+  const el=document.getElementById('editingLine');
+  el.textContent=msg;
+  clearTimeout(flashT);
+  flashT=setTimeout(()=>{ el.textContent=defaultLine(); },2800);
+}
+function viewEntry(id){
+  viewId=id;
+  setMode('view');           // setMode calls populateViewSelect which will honor viewId
+}
+
+function renderLeaderboard(){
+  const host=document.getElementById('leaderboard');
+  const totalGames=31; // 16+8+4+2+1
+  const decidedGames = results.flat().filter(m=>m.w).length;
+  const champWinner = results[4][0].w; // tournament champion, once known
+
+  if(entries.length===0){
+    host.innerHTML='<div class="lbhead"><h3>Leaderboard</h3></div>'
+      +'<div class="empty2">No saved brackets yet — go to <b>✏️ Create / Edit</b>, fill one out, name it, and Save. '
+      +(decidedGames?decidedGames+' of '+totalGames+' knockout games recorded so far.':'No knockout results recorded yet.')+'</div>';
+    return;
+  }
+
+  // compute + rank (ties share a rank)
+  const rows=entries.map(e=>({e,s:scoreBracket(e.code)}))
+    .sort((a,b)=> b.s.total-a.s.total
+                || b.s.correct-a.s.correct
+                || (b.s.maxRemaining+b.s.total)-(a.s.maxRemaining+a.s.total)
+                || a.e.name.localeCompare(b.e.name));
+  const leaderPts = rows.length?rows[0].s.total:0;
+  let lastPts=null, lastRank=0;
+  rows.forEach((row,i)=>{
+    if(row.s.total===lastPts){ row.rank=lastRank; }
+    else { row.rank=i+1; lastRank=i+1; lastPts=row.s.total; }
+  });
+
+  const rlab=['R32','R16','QF','SF','F'];
+  const medal=r=> r===1?'🥇':r===2?'🥈':r===3?'🥉':r;
+
+  // ---- pool win-odds (simple alive-picks ceiling model) ----
+  // ceiling = points already earned + points still earnable from picks whose teams are alive.
+  // odds ~ proportional to each bracket's ceiling, normalized to 100%.
+  // once no points remain to be earned, the standings are final: top score(s) split 100%.
+  const ceilings = rows.map(r=> r.s.total + r.s.maxRemaining);
+  const anyRemaining = rows.some(r=> r.s.maxRemaining>0);
+  let odds;
+  if(!anyRemaining){
+    // tournament effectively decided for scoring — leader(s) take it, ties split
+    const top=Math.max(...rows.map(r=>r.s.total));
+    const winners=rows.filter(r=>r.s.total===top).length;
+    odds=rows.map(r=> r.s.total===top ? 100/winners : 0);
+  } else {
+    // weight by ceiling^2 so a clear ceiling lead pulls ahead (still simple, not a simulation)
+    const w=ceilings.map(c=> c*c);
+    const sum=w.reduce((a,b)=>a+b,0)||1;
+    odds=w.map(x=> 100*x/sum);
+  }
+  rows.forEach((r,i)=> r.odds=odds[i]);
+
+  let html='<div class="lbhead"><h3>Leaderboard</h3>'
+    +'<span class="lbsub">'+decidedGames+' / '+totalGames+' knockout games recorded'
+    +(champWinner?` · 🏆 Champion: ${T[champWinner][1]} ${T[champWinner][0]}`:'')
+    +'</span></div>';
+
+  html+='<div class="lbscroll"><table class="lbtable"><thead><tr>'
+    +'<th class="c-rank">Rank</th>'
+    +'<th class="c-name">Bracket</th>'
+    +'<th class="c-pts">Pts</th>'
+    +'<th class="c-back">Back</th>'
+    +'<th class="c-correct">Correct</th>'
+    +'<th class="c-rounds">Wins by round</th>'
+    +'<th class="c-champ">Pick to win</th>'
+    +'<th class="c-max">Max</th>'
+    +'<th class="c-left">Left</th>'
+    +'<th class="c-odds">Win %</th>'
+    +'<th class="c-act"></th>'
+    +'</tr></thead><tbody>';
+
+  rows.forEach((row)=>{
+    const {e,s,rank}=row;
+    const isLeader = rank===1;
+    const champCode = s.champ;
+    const champCell = champCode
+      ? `<span class="chip ${s.champAlive===false?'out':'alive'}">${T[champCode][1]} ${T[champCode][0]}${s.champAlive===false?' <span class="x">out</span>':''}</span>`
+      : '<span class="muted">—</span>';
+
+    // per-round wins as little pills: e.g. R32 12/16
+    const roundsCell = rlab.map((n,j)=>{
+      const denom=[16,8,4,2,1][j];
+      const got=s.hit[j], dec=s.decided[j];
+      if(dec===0) return `<span class="pill off">${n}</span>`;
+      const cls = got===dec ? 'full' : got>0 ? 'part' : 'zero';
+      return `<span class="pill ${cls}" title="${n}: ${got} correct of ${dec} decided">${n} ${got}/${dec}</span>`;
+    }).join('');
+
+    const back = isLeader ? '<span class="lead">leader</span>' : '-'+(leaderPts-s.total);
+    const maxPossible = s.total + s.maxRemaining;
+    const correctCell = `${s.correct}/${s.picksDecided||0}`;
+    const oddsPct = row.odds;
+    const oddsTxt = oddsPct>=10 ? Math.round(oddsPct)+'%'
+                  : oddsPct>=1  ? oddsPct.toFixed(1)+'%'
+                  : oddsPct>0   ? '<1%' : '0%';
+    const oddsCell = `<div class="oddswrap" title="Estimated chance to win the pool"><div class="oddsbar" style="width:${Math.max(2,Math.min(100,oddsPct))}%"></div><span class="oddstxt">${oddsTxt}</span></div>`;
+
+    html+=`<tr class="${e.id===loadedId?'loaded ':''}${isLeader?'leaderrow':''}">`
+      +`<td class="c-rank"><span class="ranknum ${rank<=3?'medal':''}">${medal(rank)}</span></td>`
+      +`<td class="c-name"><span class="lnk strong" onclick="viewEntry('${e.id}')">${escapeHtml(e.name)}</span></td>`
+      +`<td class="c-pts"><span class="ptsbig">${s.total}</span></td>`
+      +`<td class="c-back ${isLeader?'':'behind'}">${back}</td>`
+      +`<td class="c-correct">${correctCell}</td>`
+      +`<td class="c-rounds">${roundsCell}</td>`
+      +`<td class="c-champ">${champCell}</td>`
+      +`<td class="c-max" title="Best possible final score if every live pick wins out">${maxPossible}</td>`
+      +`<td class="c-left" title="Points still earnable from picks that are still alive">${s.maxRemaining}</td>`
+      +`<td class="c-odds">${oddsCell}</td>`
+      +`<td class="c-act">`
+        +`<button class="mini-btn" onclick="viewEntry('${e.id}')">View</button>`
+        +`<button class="mini-btn" onclick="editEntry('${e.id}')">Edit</button>`
+        +`<button class="mini-btn del${e.id===pendingDel?' arm':''}" onclick="deleteEntry('${e.id}',event)">${e.id===pendingDel?'Delete?':'✕'}</button>`
+      +`</td>`
+      +`</tr>`;
+  });
+  html+='</tbody></table></div>';
+  html+='<div class="lblegend">Pts = earned · Back = behind leader · Correct = right of decided · Max = best possible final score · Left = points still earnable from live picks · Win % = estimated chance to win the pool (simple model from each bracket\'s ceiling, updates as games finish). Tap a name to view.</div>';
+  host.innerHTML=html;
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function doPrint(){
+  // The artifact runs in a sandboxed frame that blocks window.print(),
+  // so build a standalone page and open it in a new tab which can print itself.
+  const styleEl=document.querySelector('style');
+  const css=styleEl?styleEl.textContent:'';
+  const bracketHTML=document.getElementById('bracket').outerHTML;
+  const lbHTML=document.getElementById('leaderboard').outerHTML;
+  const title='World Cup 2026 Bracket';
+  const stamp=new Date().toLocaleString();
+
+  const doc=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title>
+<style>${css}
+/* force the print-friendly look on screen too, since this tab IS the printout */
+body{background:#fff;color:#000;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;margin:0;padding:14px}
+.printhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.printhead h1{font-size:18px;margin:0;color:#000}
+.printhead .stamp{font-size:11px;color:#666}
+.printbtn{margin:6px 0 14px}
+.printbtn button{font-size:14px;padding:8px 18px;border:1px solid #888;border-radius:8px;background:#f5c518;font-weight:700;cursor:pointer}
+.c-act{display:none !important}
+.scroll{overflow:visible !important;padding:0}
+.bracket{min-width:0 !important;width:100%}
+/* neutralize dark theme on screen in this print tab */
+.matchcard{background:#fff !important;border-color:#bbb !important}
+.mpill{background:#eee !important;color:#222 !important;border-bottom-color:#bbb !important}
+.finalcard{border-color:#caa408 !important}
+.finalcard .mpill{background:#f5c518 !important;color:#000 !important}
+.vsdiv span{background:#fff !important;color:#999 !important}
+.slot{background:#fff !important;border-color:#999 !important;color:#000}
+.slot.win{background:#d8f0dd !important}
+.nm{color:#000 !important}
+.goals{color:#000 !important}
+.goals .pen{color:#9a7b00 !important}
+.seed{background:#eee !important;color:#333 !important;border-color:#bbb !important}
+.champbox{background:#f4f9f4 !important}
+.champbox .who,.champbox .lab{color:#000 !important}
+.rndlabel{color:#444 !important}
+.lbscroll{border-color:#999 !important;overflow:visible !important}
+.lbtable{min-width:0 !important}
+.lbtable thead th{background:#eee !important;color:#000 !important}
+.lbtable td{color:#000 !important;border-bottom-color:#ccc !important}
+.ptsbig{color:#7a5c00 !important}
+.lnk.strong{color:#113 !important}
+.lbhead h3{color:#000 !important}
+.lbsub,.lblegend{color:#444 !important}
+.oddswrap{background:#eee !important;border-color:#bbb !important}
+.oddstxt{color:#000 !important}
+@media print{.printbtn{display:none}}
+</style></head>
+<body>
+<div class="printhead"><h1>🏆 World Cup 2026 — Bracket &amp; Standings</h1><span class="stamp">${stamp}</span></div>
+<div class="printbtn"><button onclick="window.print()">🖨 Print this page</button></div>
+${lbHTML}
+<div style="height:14px"></div>
+${bracketHTML}
+</body></html>`;
+
+  const w=window.open('','_blank');
+  if(!w){
+    flash('⚠ Pop-up blocked — allow pop-ups for this site, then tap Print again.');
+    return;
+  }
+  w.document.open();
+  w.document.write(doc);
+  w.document.close();
+  // give it a beat to render, then offer the print dialog
+  setTimeout(()=>{ try{ w.focus(); w.print(); }catch(e){} }, 400);
+}
+
+// the same light theme used for the print tab, applied in-place for PDF capture
+const PDF_THEME_CSS=`
+.c-act{display:none !important}
+.scroll{overflow:visible !important}
+.matchcard{background:#fff !important;border-color:#bbb !important}
+.mpill{background:#eee !important;color:#222 !important;border-bottom-color:#bbb !important}
+.finalcard{border-color:#caa408 !important}
+.finalcard .mpill{background:#f5c518 !important;color:#000 !important}
+.vsdiv span{background:#fff !important;color:#999 !important}
+.slot{background:#fff !important;border-color:#999 !important;color:#000 !important}
+.slot.win{background:#d8f0dd !important}
+.nm{color:#000 !important}
+.goals{color:#000 !important}
+.goals .pen{color:#9a7b00 !important}
+.seed{background:#eee !important;color:#333 !important;border-color:#bbb !important}
+.champbox{background:#f4f9f4 !important}
+.champbox .who,.champbox .lab{color:#000 !important}
+.rndlabel{color:#444 !important}
+.lbscroll{border-color:#999 !important;overflow:visible !important}
+.lbtable thead th{background:#eee !important;color:#000 !important}
+.lbtable td{color:#000 !important;border-bottom-color:#ccc !important}
+.ptsbig{color:#7a5c00 !important}
+.lnk.strong{color:#113 !important}
+.lbhead h3{color:#000 !important}
+.lbsub,.lblegend{color:#444 !important}
+.oddswrap{background:#eee !important;border-color:#bbb !important}
+.oddstxt{color:#000 !important}
+`;
+
+async function savePDF(){
+  if(typeof html2canvas==='undefined' || !window.jspdf){
+    flash('⚠ PDF tools still loading — wait a second and try again.');
+    return;
+  }
+  flash('Building PDF…');
+  // figure out a good filename + title for the current view
+  let who='Bracket';
+  if(MODE==='view' && viewId){ const e=entries.find(x=>x.id===viewId); if(e) who=e.name; }
+  else if(MODE==='edit'){ const n=(document.getElementById('nameInput').value||'').trim(); if(n) who=n; }
+  else if(MODE==='results'){ who='Actual Results'; }
+
+  // apply temporary light theme + expand widths so nothing is clipped
+  const themeStyle=document.createElement('style'); themeStyle.textContent=PDF_THEME_CSS;
+  document.head.appendChild(themeStyle);
+  const scrollEl=document.querySelector('.scroll');
+  const prevOverflow=scrollEl?scrollEl.style.overflow:'';
+  if(scrollEl) scrollEl.style.overflow='visible';
+
+  try{
+    const { jsPDF }=window.jspdf;
+    const pdf=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
+    const pageW=pdf.internal.pageSize.getWidth();
+    const pageH=pdf.internal.pageSize.getHeight();
+    const margin=18;
+    const title=`World Cup 2026 — ${who}`;
+    const stamp=new Date().toLocaleString();
+
+    // helper: capture a node to an image and place it on a fresh page, scaled to fit
+    async function addNode(node, heading){
+      const canvas=await html2canvas(node,{scale:2,backgroundColor:'#ffffff',useCORS:true,
+        windowWidth:node.scrollWidth, width:node.scrollWidth});
+      const img=canvas.toDataURL('image/png');
+      const availW=pageW-margin*2;
+      const availH=pageH-margin*2-28; // leave room for heading
+      let w=availW, h=w*canvas.height/canvas.width;
+      if(h>availH){ h=availH; w=h*canvas.width/canvas.height; }
+      const x=(pageW-w)/2, y=margin+24;
+      pdf.setFontSize(14); pdf.setTextColor(20);
+      pdf.text(heading, margin, margin+12);
+      pdf.setFontSize(8); pdf.setTextColor(120);
+      pdf.text(stamp, pageW-margin, margin+12, {align:'right'});
+      pdf.addImage(img,'PNG',x,y,w,h);
+    }
+
+    // page 1: the bracket
+    await addNode(document.getElementById('bracket'), title);
+    // page 2: the leaderboard (only if there are saved entries)
+    if(entries.length){
+      pdf.addPage('a4','landscape');
+      await addNode(document.getElementById('leaderboard'), 'Leaderboard — '+title);
+    }
+
+    const safe=who.replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'')||'bracket';
+    pdf.save(`WC2026_${safe}.pdf`);
+    flash('PDF saved ✓');
+  }catch(err){
+    flash('⚠ PDF failed to generate. Try again.');
+  }finally{
+    if(scrollEl) scrollEl.style.overflow=prevOverflow;
+    themeStyle.remove();
+  }
+}
+function autofill(){
+  if(MODE!=='edit') return;
+  const br=rounds;
+  for(let r=0;r<5;r++){
+    for(let mi=0;mi<br[r].length;mi++){
+      const a=slotTeamIn(br,r,mi,'a');
+      const b=slotTeamIn(br,r,mi,'b');
+      br[r][mi].w = Math.random()<0.5 ? a : b;
+    }
+  }
+  render(); updateScore();
+}
+// ---- init ----
+(async function init(){
+  await loadAll();          // loads saved entries + persisted results (seeds Canada win)
+  await maybeSeedHuntFamily(); // first open with empty storage -> load Hunt Family brackets
+  setMode('edit');          // sets toolbars, tabs, and renders
+  syncResults(false);       // auto-sync actual results in the background on open
+})();
+</script>
+</body>
+</html>
