@@ -21,8 +21,8 @@
     border-radius:8px;padding:7px 13px;font-size:12.5px;cursor:pointer}
   button.tool:hover{border-color:var(--gold)}
   .scroll{overflow-x:auto;padding:10px 14px 30px}
-  .bracket{display:flex;gap:14px;min-width:1560px;align-items:stretch}
-  .col{display:flex;flex-direction:column;flex:1;min-width:178px}
+  .bracket{display:flex;gap:14px;min-width:1480px;align-items:stretch}
+  .col{display:flex;flex-direction:column;flex:1;min-width:168px}
   .colbody{display:flex;flex-direction:column;flex:1}
   .rndlabel{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7d96b3;
     text-align:center;margin-bottom:6px;font-weight:600;height:16px;flex:none}
@@ -32,29 +32,29 @@
   .matchcard{position:relative;background:#0d2236;border:1px solid #25425f;border-radius:10px;
     padding:0 6px 6px;margin:9px 0 6px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
   .matchcard .mpill{display:block;text-align:center;background:#15304a;
-    color:#9fb8d4;font-size:9px;font-weight:700;letter-spacing:.2px;
-    margin:0 -6px 6px;padding:4px 8px;border-bottom:1px solid #25425f;
-    border-radius:10px 10px 0 0;line-height:1.35;white-space:normal}
+    color:#9fb8d4;font-size:8px;font-weight:700;letter-spacing:.1px;
+    margin:0 -6px 5px;padding:3px 6px;border-bottom:1px solid #25425f;
+    border-radius:10px 10px 0 0;line-height:1.3;white-space:normal}
   .vsdiv{display:flex;align-items:center;justify-content:center;height:0;position:relative;margin:1px 0}
-  .vsdiv span{font-size:8.5px;font-weight:800;color:#65809d;background:#0d2236;
+  .vsdiv span{font-size:8px;font-weight:800;color:#65809d;background:#0d2236;
     padding:0 6px;text-transform:uppercase;letter-spacing:1px;position:relative;z-index:1}
   .vsdiv::before{content:'';position:absolute;left:8px;right:8px;top:50%;height:1px;background:#23405d}
-  .slot{display:flex;align-items:center;gap:7px;background:var(--panel);
+  .slot{display:flex;align-items:center;gap:5px;background:var(--panel);
     border:1px solid var(--line);border-left:4px solid var(--cc,#3a567a);
-    border-radius:7px;padding:6px 8px;margin:0;cursor:pointer;
-    transition:.12s;min-height:34px;user-select:none}
+    border-radius:7px;padding:5px 7px;margin:0;cursor:pointer;
+    transition:.12s;min-height:32px;user-select:none}
   .slot:hover{background:#16314b}
   .slot.win{background:#143726;border-color:var(--pick2);box-shadow:0 0 0 1px var(--pick2) inset}
   .slot.empty{opacity:.55;cursor:default}
-  .flag{font-size:16px;line-height:1;width:22px;text-align:center;flex:0 0 auto}
-  .nm{font-size:12px;font-weight:600;line-height:1.15;text-align:left;
+  .flag{font-size:14px;line-height:1;width:18px;text-align:center;flex:0 0 auto}
+  .nm{font-size:10.5px;font-weight:600;line-height:1.12;text-align:left;
     flex:1 1 auto;min-width:0;
     white-space:normal;overflow-wrap:break-word;word-break:normal;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .seed{font-size:9.5px;color:#7d96b3;margin-left:6px;flex:0 0 auto;font-weight:600;
-    background:#13283f;padding:1px 5px;border-radius:4px;border:1px solid #25425f}
-  .goals{font-size:13px;font-weight:800;color:#9fb3c9;flex:0 0 auto;margin-left:6px;
-    min-width:14px;text-align:right;font-variant-numeric:tabular-nums}
+  .seed{font-size:8.5px;color:#7d96b3;margin-left:4px;flex:0 0 auto;font-weight:600;
+    background:#13283f;padding:1px 4px;border-radius:4px;border:1px solid #25425f}
+  .goals{font-size:12px;font-weight:800;color:#9fb3c9;flex:0 0 auto;margin-left:5px;
+    min-width:12px;text-align:right;font-variant-numeric:tabular-nums}
   .goals.gwin{color:#fff}
   .goals .pen{font-size:9px;font-weight:700;color:#f2cf4f;margin-left:1px}
   .champ{display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:210px;position:relative}
@@ -201,6 +201,7 @@
   .lnk.strong{font-weight:700;font-size:13.5px;color:#cfe2ff}
   .c-pts{width:56px}
   .ptsbig{font-weight:800;color:var(--gold);font-size:15px}
+  .ptsbig-pill{font-size:14px;padding:3px 9px}
   .c-back{width:58px;font-size:12px;color:#8aa3bf}
   .c-back.behind{color:#e0795a}
   .lead{color:var(--gold);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
@@ -220,7 +221,8 @@
     text-decoration:none;letter-spacing:.4px;margin-left:2px}
   .muted{color:#566f8a}
   .c-max{width:48px;text-align:center;color:#8aa3bf;font-weight:600}
-  .c-left{width:44px;text-align:center;color:#cdd9e6;font-weight:600}
+  .c-left{width:48px;text-align:center;color:#cdd9e6;font-weight:600}
+  .c-dead{width:48px;text-align:center;color:#cdd9e6;font-weight:600}
   .c-odds{width:96px}
   .oddswrap{position:relative;height:18px;background:#13283f;border:1px solid #25425f;border-radius:5px;
     overflow:hidden;min-width:78px}
@@ -772,17 +774,19 @@ function scoreBracket(pickSerialized){
   const per=[0,0,0,0,0];        // points earned per round
   const hit=[0,0,0,0,0];        // correct picks per round
   const decided=[0,0,0,0,0];    // how many of this bracket's matches are decided in results
-  let maxRemaining=0;           // points still earnable if every undecided pick of theirs hits
+  let maxRemaining=0;           // points still earnable if every undecided pick of theirs hits (=Live)
+  let deadPoints=0;             // points lost: picks for teams already eliminated, not yet banked
   for(let r=0;r<5;r++) for(let mi=0;mi<pb[r].length;mi++){
     const pw=pb[r][mi].w, aw=results[r][mi].w;
     if(!pw) continue;            // they didn't pick this slot
     if(aw){                      // result known
       decided[r]++;
       if(pw===aw){ total+=PTS[r]; per[r]+=PTS[r]; hit[r]++; }
+      else if(!isAlive(pw)){ deadPoints+=PTS[r]; }  // their pick lost this slot & is out
     } else {
       // still possible to earn — but only if their pick is still alive in actual results.
-      // a pick is "alive" if they haven't already been knocked out in an earlier decided round.
       if(isAlive(pw)) maxRemaining+=PTS[r];
+      else deadPoints+=PTS[r];   // undecided round, but the team is already eliminated -> lost
     }
   }
   // champion pick & whether still alive
@@ -790,7 +794,7 @@ function scoreBracket(pickSerialized){
   const champAlive = champ ? isAlive(champ) : null;
   const correct = hit.reduce((a,b)=>a+b,0);
   const picksDecided = decided.reduce((a,b)=>a+b,0);
-  return {total,per,hit,decided,correct,picksDecided,maxRemaining,champ,champAlive};
+  return {total,per,hit,decided,correct,picksDecided,maxRemaining,deadPoints,champ,champAlive};
 }
 // a team is "alive" in actual results if they never lost a decided match
 function isAlive(code){
@@ -1465,13 +1469,14 @@ function renderLeaderboard(){
   html+='<div class="lbscroll"><table class="lbtable"><thead><tr>'
     +'<th class="c-rank">Rank</th>'
     +'<th class="c-name">Bracket</th>'
-    +'<th class="c-pts">Pts</th>'
+    +'<th class="c-pts">Earned</th>'
     +'<th class="c-back">Back</th>'
     +'<th class="c-correct">Correct</th>'
     +'<th class="c-rounds">Wins by round</th>'
     +'<th class="c-champ">Pick to win</th>'
     +'<th class="c-max">Max</th>'
-    +'<th class="c-left">Left</th>'
+    +'<th class="c-left">Live</th>'
+    +'<th class="c-dead">Dead</th>'
     +'<th class="c-odds">Win %</th>'
     +'<th class="c-act"></th>'
     +'</tr></thead><tbody>';
@@ -1505,13 +1510,14 @@ function renderLeaderboard(){
     html+=`<tr class="${e.id===loadedId?'loaded ':''}${isLeader?'leaderrow':''}">`
       +`<td class="c-rank"><span class="ranknum ${rank<=3?'medal':''}">${medal(rank)}</span></td>`
       +`<td class="c-name"><span class="lnk strong" onclick="viewEntry('${e.id}')">${escapeHtml(e.name)}</span></td>`
-      +`<td class="c-pts"><span class="ptsbig">${s.total}</span></td>`
+      +`<td class="c-pts">${s.total>0?`<span class="tnum earned ptsbig-pill">${s.total}</span>`:'<span class="tg-dash">–</span>'}</td>`
       +`<td class="c-back ${isLeader?'':'behind'}">${back}</td>`
       +`<td class="c-correct">${correctCell}</td>`
       +`<td class="c-rounds">${roundsCell}</td>`
       +`<td class="c-champ">${champCell}</td>`
       +`<td class="c-max" title="Best possible final score if every live pick wins out">${maxPossible}</td>`
-      +`<td class="c-left" title="Points still earnable from picks that are still alive">${s.maxRemaining}</td>`
+      +`<td class="c-left" title="Points still earnable from picks that are still alive"><span class="tnum live">${s.maxRemaining}</span></td>`
+      +`<td class="c-dead" title="Points already forfeited from picks whose teams are eliminated">${s.deadPoints>0?`<span class="tnum dead">${s.deadPoints}</span>`:'<span class="tg-dash">–</span>'}</td>`
       +`<td class="c-odds">${oddsCell}</td>`
       +`<td class="c-act">`
         +`<button class="mini-btn" onclick="viewEntry('${e.id}')">View</button>`
@@ -1522,7 +1528,7 @@ function renderLeaderboard(){
       +`</tr>`;
   });
   html+='</tbody></table></div>';
-  html+='<div class="lblegend">Pts = earned · Back = behind leader · Correct = right of decided · Max = best possible final score · Left = points still earnable from live picks · Win % = estimated chance to win the pool (simple model from each bracket\'s ceiling, updates as games finish). Tap a name to view.</div>';
+  html+='<div class="lblegend">Earned = points banked · Back = behind leader · Correct = right of decided · Max = best possible final score (earned + live) · Live = points still earnable from alive picks · Dead = points lost to eliminated picks · Win % = estimated chance to win the pool. Tap a name to view.</div>';
   host.innerHTML=html;
   renderDateGames();
 }
@@ -1819,9 +1825,9 @@ function autofill(){
 (async function init(){
   await loadAll();          // loads saved entries + persisted results (seeds Canada win)
   await maybeSeedHuntFamily(); // first open with empty storage -> load Hunt Family brackets
-  // LOCKED VIEW-ONLY BUILD: default to Actual Results (Create/Edit is disabled).
-  // For an editable version, change this back to setMode('edit').
-  setMode('results');       // sets toolbars, tabs, and renders
+  // LOCKED VIEW-ONLY BUILD: default to the Standings tab (leaderboard + games by date).
+  // For an editable version, change this to setMode('edit').
+  setMode('standings');     // sets toolbars, tabs, and renders
   syncResults(false);       // initial background sync on open
   // auto-sync every 15 seconds (the feed itself updates ~daily, so this just
   // catches any update promptly; manual Sync buttons removed)
