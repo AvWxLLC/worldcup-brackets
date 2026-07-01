@@ -21,16 +21,15 @@
     border-radius:8px;padding:7px 13px;font-size:12.5px;cursor:pointer}
   button.tool:hover{border-color:var(--gold)}
   .scroll{overflow-x:auto;padding:10px 14px 30px}
-  .bracket{display:flex;gap:14px;min-width:1480px;align-items:stretch}
-  .col{display:flex;flex-direction:column;flex:1;min-width:168px}
-  .colbody{display:flex;flex-direction:column;flex:1}
+  .bracket{display:flex;gap:14px;min-width:1480px;align-items:flex-start}
+  .col{display:flex;flex-direction:column;flex:1 1 0;min-width:168px}
+  .colbody{position:relative}
   .rndlabel{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7d96b3;
     text-align:center;margin-bottom:6px;font-weight:600;height:16px;flex:none}
-  /* each match grows to claim its vertical share, then centers its card */
-  .match{flex:1 1 0;display:flex;flex-direction:column;justify-content:center}
-  /* a boxed card groups the two opponents into one clear matchup */
+  /* matches are absolutely positioned by JS at their feeder midpoints */
+  .match{display:flex;flex-direction:column;justify-content:center}
   .matchcard{position:relative;background:#0d2236;border:1px solid #25425f;border-radius:10px;
-    padding:0 6px 6px;margin:9px 0 6px;box-shadow:0 1px 4px rgba(0,0,0,.25)}
+    padding:0 6px 6px;margin:0;box-shadow:0 1px 4px rgba(0,0,0,.25)}
   .matchcard .mpill{display:block;text-align:center;background:#15304a;
     color:#9fb8d4;font-size:8px;font-weight:700;letter-spacing:.1px;
     margin:0 -6px 5px;padding:3px 6px;border-bottom:1px solid #25425f;
@@ -57,7 +56,7 @@
     min-width:12px;text-align:right;font-variant-numeric:tabular-nums}
   .goals.gwin{color:#fff}
   .goals .pen{font-size:9px;font-weight:700;color:#f2cf4f;margin-left:1px}
-  .champ{display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:210px;position:relative}
+  .champ{display:flex;flex-direction:column;align-items:center;flex:0 0 220px;min-width:220px;position:relative}
   .champbody{justify-content:center !important;align-items:stretch;flex:1}
   .champ-top{position:absolute;top:26px;left:0;right:0;display:flex;flex-direction:column;align-items:center;z-index:2}
   .finalmatch{width:100%;flex:0 0 auto}
@@ -443,53 +442,85 @@ const NAME2CODE = (()=>{
 function codeFromName(n){ return n? (NAME2CODE[String(n).toLowerCase().trim()]||null) : null; }
 // Order arranged so winners feed correctly into R16 per FIFA bracket halves.
 const R32 = [
-  // LEFT HALF
-  ["RSA","CAN"], ["BRA","JPN"],
-  ["GER","PAR"], ["NED","MAR"],
-  ["CIV","NOR"], ["FRA","SWE"],
-  ["MEX","ECU"], ["ENG","COD"],
-  // RIGHT HALF
-  ["BEL","SEN"], ["USA","BIH"],
-  ["ESP","AUT"], ["SUI","ALG"],
-  ["POR","CRO"], ["AUS","EGY"],
-  ["ARG","CPV"], ["COL","GHA"],
+  // Definitive FIFA bracket (verified vs Sporting News full bracket image).
+  // Standard layout: slots 0-7 feed Semifinal 1 (left), slots 8-15 feed Semifinal 2 (right).
+  // England (slot 11) and Colombia (slot 15) are BOTH in Semifinal 2 and can meet there.
+  ["GER","PAR"], ["FRA","SWE"],   // R16 89  ┐QF97
+  ["RSA","CAN"], ["NED","MAR"],   // R16 90  ┘   → SF1
+  ["POR","CRO"], ["ESP","AUT"],   // R16 93  ┐QF98
+  ["USA","BIH"], ["BEL","SEN"],   // R16 94  ┘   → SF1
+  ["BRA","JPN"], ["CIV","NOR"],   // R16 91  ┐QF99
+  ["MEX","ECU"], ["ENG","COD"],   // R16 92  ┘   → SF2
+  ["ARG","CPV"], ["AUS","EGY"],   // R16 95  ┐QF100
+  ["SUI","ALG"], ["COL","GHA"],   // R16 96  ┘   → SF2
 ];
 
-// ---- R32 schedule (confirmed), aligned 1:1 with the R32 array order above ----
+// ---- R32 schedule (confirmed), aligned 1:1 with the R32 array (tree) order above ----
 // [date, kickoff ET, city]
 const R32_SCHED = [
-  ["Jun 28","3:00p","Los Angeles, CA"],
-  ["Jun 29","1:00p","Houston, TX"],
-  ["Jun 29","4:30p","Boston, MA"],
-  ["Jun 29","9:00p","Monterrey, MEX"],
-  ["Jun 30","1:00p","Dallas, TX"],
-  ["Jun 30","5:00p","New York, NJ"],
-  ["Jun 30","9:00p","Mexico City, MEX"],
-  ["Jul 1","12:00p","Atlanta, GA"],
-  ["Jul 1","4:00p","Seattle, WA"],
-  ["Jul 1","8:00p","San Francisco, CA"],
-  ["Jul 2","3:00p","Los Angeles, CA"],
-  ["Jul 2","6:00p","Vancouver, CAN"],
-  ["Jul 2","9:00p","Toronto, CAN"],
-  ["Jul 3","1:00p","Dallas, TX"],
-  ["Jul 3","5:00p","Miami, FL"],
-  ["Jul 3","9:00p","Kansas City, MO"],
+  ["Jun 29","4:30p","Boston, MA"],        // GER/PAR
+  ["Jun 30","5:00p","New York, NJ"],      // FRA/SWE
+  ["Jun 28","3:00p","Los Angeles, CA"],   // RSA/CAN
+  ["Jun 29","9:00p","Monterrey, MEX"],    // NED/MAR
+  ["Jul 2","9:00p","Toronto, CAN"],       // POR/CRO
+  ["Jul 2","3:00p","Los Angeles, CA"],    // ESP/AUT
+  ["Jul 1","8:00p","San Francisco, CA"],  // USA/BIH
+  ["Jul 1","4:00p","Seattle, WA"],        // BEL/SEN
+  ["Jun 29","1:00p","Houston, TX"],       // BRA/JPN
+  ["Jun 30","1:00p","Dallas, TX"],        // CIV/NOR
+  ["Jun 30","9:00p","Mexico City, MEX"],  // MEX/ECU
+  ["Jul 1","12:00p","Atlanta, GA"],       // ENG/COD
+  ["Jul 3","5:00p","Miami, FL"],          // ARG/CPV
+  ["Jul 3","1:00p","Dallas, TX"],         // AUS/EGY
+  ["Jul 2","6:00p","Vancouver, CAN"],     // SUI/ALG
+  ["Jul 3","9:00p","Kansas City, MO"],    // COL/GHA
 ];
-// later-round dates are fixed by FIFA even though teams aren't known yet
-const ROUND_INFO = {
-  1:{label:"Round of 16", window:"Jul 4–7"},
-  2:{label:"Quarterfinal", window:"Jul 9–11"},
-  3:{label:"Semifinal", window:"Jul 14–15"},
-  4:{label:"Final", window:"Jul 19 · New York, NJ"},
-};
+// later-round dates are fixed by FIFA even though teams aren't known yet.
+// Keyed by tree match index so each specific game shows its own date/city.
+// Tree R16 order → FIFA match: [0]=89,[1]=90,[2]=93,[3]=94,[4]=91,[5]=92,[6]=95,[7]=96
+const R16_SCHED = [
+  ["Round of 16","Jul 4 · 1:00p","Los Angeles, CA"],   // 0 = m89 (GER/PAR–FRA/SWE winners)
+  ["Round of 16","Jul 4 · 5:00p","Houston, TX"],       // 1 = m90 (RSA/CAN–NED/MAR)
+  ["Round of 16","Jul 6 · 3:00p","Dallas, TX"],        // 2 = m93 (POR/CRO–ESP/AUT)
+  ["Round of 16","Jul 6 · 8:00p","Seattle, WA"],       // 3 = m94 (USA/BIH–BEL/SEN)
+  ["Round of 16","Jul 5 · 4:00p","Philadelphia, PA"],  // 4 = m91 (BRA/JPN–CIV/NOR)
+  ["Round of 16","Jul 5 · 8:00p","Mexico City, MEX"],  // 5 = m92 (MEX/ECU–ENG/COD)
+  ["Round of 16","Jul 7 · 12:00p","Miami, FL"],        // 6 = m95 (ARG/CPV–AUS/EGY)
+  ["Round of 16","Jul 7 · 4:00p","Atlanta, GA"],       // 7 = m96 (SUI/ALG–COL/GHA)
+];
+const QF_SCHED = [
+  ["Quarterfinal","Jul 9 · 3:00p","Los Angeles, CA"],  // 0 (left-top)
+  ["Quarterfinal","Jul 10 · 3:00p","Kansas City, MO"], // 1 (left-bottom)
+  ["Quarterfinal","Jul 11 · 5:00p","Miami, FL"],       // 2 (right-top)
+  ["Quarterfinal","Jul 11 · 9:00p","Boston, MA"],      // 3 (right-bottom)
+];
+const SF_SCHED = [
+  ["Semifinal","Jul 14 · 3:00p","Dallas, TX"],         // 0 (left → SF1)
+  ["Semifinal","Jul 15 · 3:00p","Atlanta, GA"],        // 1 (right → SF2)
+];
+const FINAL_SCHED = ["Final","Jul 19 · 3:00p","New York, NJ"];
 // returns the header text for a match pill, given round r and match index mi
 function matchHeader(r,mi){
   if(r===0){
     const s=R32_SCHED[mi];
-    return s ? `${s[0]} · ${s[1]} · ${s[2]}` : 'Round of 32';
+    return s ? `Round of 32 · ${s[0]} · ${s[1]} · ${s[2]}` : 'Round of 32';
   }
-  const info=ROUND_INFO[r];
-  return info ? `${info.label} · ${info.window}` : '';
+  let s=null;
+  if(r===1) s=R16_SCHED[mi];
+  else if(r===2) s=QF_SCHED[mi];
+  else if(r===3) s=SF_SCHED[mi];
+  else if(r===4) s=FINAL_SCHED;
+  return s ? `${s[0]} · ${s[1]} · ${s[2]}` : '';
+}
+// compact label for the narrow bracket pills (full detail is shown in the game modal)
+function pillHeader(r,mi){
+  if(r===0){ const s=R32_SCHED[mi]; return s ? `${s[0]} · ${s[1]} · ${s[2]}` : 'Round of 32'; }
+  let s=null;
+  if(r===1) s=R16_SCHED[mi];
+  else if(r===2) s=QF_SCHED[mi];
+  else if(r===3) s=SF_SCHED[mi];
+  else if(r===4) s=FINAL_SCHED;
+  return s ? `${s[0]} · ${s[1]}` : '';   // round + date/time, no city (keeps pill short)
 }
 
 // rounds[r] = array of matches; each match = {a,b,winner}
@@ -528,17 +559,36 @@ function deserialize(str){
   return br;
 }
 
-// ---- persistent storage (artifact storage API; falls back to in-memory) ----
+// ---- persistent storage ----
+// Priority: (1) Anthropic artifact storage API (when running inside Claude),
+// (2) the browser's localStorage (when hosted, e.g. GitHub Pages) — this is what
+// makes saved brackets survive page reloads AND file/code updates, because
+// localStorage is keyed to the domain, not to the specific HTML file,
+// (3) in-memory (last resort; lost on reload).
 const HAS_STORE = (typeof window!=='undefined' && window.storage && window.storage.set);
+const HAS_LS = (()=>{ try{ const k='__wc_test__'; window.localStorage.setItem(k,'1'); window.localStorage.removeItem(k); return true; }catch(e){ return false; } })();
 const memStore={};
 async function storeGet(key){
-  if(!HAS_STORE) return (key in memStore)?memStore[key]:null;
-  try{ const r=await window.storage.get(key,false); return r?JSON.parse(r.value):null; }
-  catch(e){ return null; }
+  if(HAS_STORE){
+    try{ const r=await window.storage.get(key,false); return r?JSON.parse(r.value):null; }
+    catch(e){ return null; }
+  }
+  if(HAS_LS){
+    try{ const v=window.localStorage.getItem(key); return v?JSON.parse(v):null; }
+    catch(e){ return null; }
+  }
+  return (key in memStore)?memStore[key]:null;
 }
 async function storeSet(key,val){
-  if(!HAS_STORE){ memStore[key]=val; return; }
-  try{ await window.storage.set(key,JSON.stringify(val),false); }catch(e){}
+  if(HAS_STORE){
+    try{ await window.storage.set(key,JSON.stringify(val),false); }catch(e){}
+    return;
+  }
+  if(HAS_LS){
+    try{ window.localStorage.setItem(key,JSON.stringify(val)); }catch(e){}
+    return;
+  }
+  memStore[key]=val;
 }
 
 let entries=[];  // [{id,name,code,flag,bracket(serialized)}]
@@ -873,31 +923,79 @@ const LABELS=["Round of 32","Round of 16","Quarterfinals","Semifinals","Final"];
 function render(){
   const br=document.getElementById('bracket');
   br.innerHTML='';
-  // We lay out: R32(L) R16(L) QF(L) SF(L) | FINAL | SF(R) QF(R) R16(R) R32(R)
-  const leftMatches = [ [0,0,8],[1,0,4],[2,0,2],[3,0,1] ]; // [round, startIndex, count]
-  const rightMatches= [ [0,8,8],[1,4,4],[2,2,2],[3,1,1] ];
+  // Standard bracket layout. Tree slots 0-7 = LEFT half (→ Semifinal 1),
+  // slots 8-15 = RIGHT half (→ Semifinal 2). Each match centers at the midpoint
+  // of its two feeder matches. Columns: R32 R16 QF SF | FINAL | SF QF R16 R32.
+  //   [round, treeMatchIndex, centerRow]  (centerRow in R32-row units 0..7)
+  const L_R32 = [ [0,0,0],[0,1,1],[0,2,2],[0,3,3],[0,4,4],[0,5,5],[0,6,6],[0,7,7] ];
+  const R_R32 = [ [0,8,0],[0,9,1],[0,10,2],[0,11,3],[0,12,4],[0,13,5],[0,14,6],[0,15,7] ];
+  const L_R16 = [ [1,0,0.5],[1,1,2.5],[1,2,4.5],[1,3,6.5] ];
+  const R_R16 = [ [1,4,0.5],[1,5,2.5],[1,6,4.5],[1,7,6.5] ];
+  const L_QF  = [ [2,0,1.5],[2,1,5.5] ];
+  const R_QF  = [ [2,2,1.5],[2,3,5.5] ];
+  const L_SF  = [ [3,0,3.5] ];
+  const R_SF  = [ [3,1,3.5] ];
 
-  // left columns r32->sf
-  for(let c=0;c<4;c++){
-    br.appendChild(col(LABELS[c], leftMatches[c][0], leftMatches[c][1], leftMatches[c][2]));
-  }
-  // champion center
+  br.appendChild(colByRows(LABELS[0], L_R32));
+  br.appendChild(colByRows(LABELS[1], L_R16));
+  br.appendChild(colByRows(LABELS[2], L_QF));
+  br.appendChild(colByRows(LABELS[3], L_SF));
   br.appendChild(championCol());
-  // right columns sf->r32 (reversed)
-  for(let c=3;c>=0;c--){
-    br.appendChild(col(LABELS[c], rightMatches[c][0], rightMatches[c][1], rightMatches[c][2]));
-  }
+  br.appendChild(colByRows(LABELS[3], R_SF));
+  br.appendChild(colByRows(LABELS[2], R_QF));
+  br.appendChild(colByRows(LABELS[1], R_R16));
+  br.appendChild(colByRows(LABELS[0], R_R32));
   updateScore();
 }
 
+// --- bracket geometry: absolute positioning so every match sits at the
+// --- vertical midpoint of its two feeder matches (a true tournament bracket).
+const CARD_H = 96;   // approx height of one match card (pill + 2 slots)
+const R32_GAP = 20;  // vertical gap between adjacent R32 cards
+const R32_PITCH = CARD_H + R32_GAP;         // center-to-center distance in R32
+const BRACKET_H = 8*R32_PITCH;              // total column height (8 R32 rows)
+
+// Build a display column from explicit [round, matchIndex, centerRow] entries.
+// centerRow is in units of R32 rows (0..7). Row r's vertical center = r*PITCH + PITCH/2.
+function colByRows(label, entries){
+  const d=document.createElement('div'); d.className='col';
+  const lab=document.createElement('div'); lab.className='rndlabel'; lab.textContent=label;
+  d.appendChild(lab);
+  const body=document.createElement('div'); body.className='colbody';
+  body.style.position='relative';
+  body.style.height=BRACKET_H+'px';
+  for(const [r,mi,centerRow] of entries){
+    const el=matchEl(r,mi);
+    el.style.position='absolute'; el.style.left='0'; el.style.right='0';
+    const centerY = centerRow*R32_PITCH + R32_PITCH/2;
+    el.style.top=(centerY - CARD_H/2)+'px';
+    body.appendChild(el);
+  }
+  d.appendChild(body);
+  return d;
+}
+
+// (legacy contiguous-column helper, no longer used by render but kept for safety)
 function col(label, r, start, count){
   const d=document.createElement('div'); d.className='col';
   const lab=document.createElement('div'); lab.className='rndlabel'; lab.textContent=label;
   d.appendChild(lab);
   const body=document.createElement('div'); body.className='colbody';
+  body.style.position='relative';
+  body.style.height=BRACKET_H+'px';
   for(let k=0;k<count;k++){
     const mi=start+k;
-    body.appendChild(matchEl(r,mi));
+    const el=matchEl(r,mi);
+    el.style.position='absolute';
+    el.style.left='0'; el.style.right='0';
+    const span = Math.pow(2, r);
+    const firstLeaf = k*span;
+    const lastLeaf  = firstLeaf + span - 1;
+    const cFirst = firstLeaf*R32_PITCH + R32_PITCH/2;
+    const cLast  = lastLeaf *R32_PITCH + R32_PITCH/2;
+    const centerY = (cFirst + cLast)/2;
+    el.style.top = (centerY - CARD_H/2) + 'px';
+    body.appendChild(el);
   }
   d.appendChild(body);
   return d;
@@ -909,7 +1007,7 @@ function matchEl(r,mi){
 
   // header pill: date · time · venue (R32) or round · date window (later rounds)
   const pill=document.createElement('div'); pill.className='mpill';
-  pill.textContent=matchHeader(r,mi);
+  pill.textContent=pillHeader(r,mi);
   pill.title='Tap to see who picked whom';
   pill.onclick=(ev)=>{ ev.stopPropagation(); openGameModal(r,mi); };
   card.appendChild(pill);
@@ -991,12 +1089,10 @@ function slotEl(r,mi,side){
 
 function championCol(){
   const d=document.createElement('div'); d.className='col champ';
-  const final=activeBracket()[4][0];
-  const wcode=final.w;
   const lab=document.createElement('div'); lab.className='rndlabel'; lab.textContent='Final';
   d.appendChild(lab);
 
-  // winner box pinned to the TOP (absolutely positioned, out of the centering flow)
+  const wcode=activeBracket()[4][0].w;
   const top=document.createElement('div'); top.className='champ-top';
   const tro=document.createElement('div'); tro.className='trophy'; tro.textContent='🏆';
   const box=document.createElement('div'); box.className='champbox';
@@ -1006,24 +1102,24 @@ function championCol(){
   } else {
     box.innerHTML=`<div class="lab">World Cup Winner</div><div class="wf">❔</div><div class="who" style="color:#7d96b3">TBD</div>`;
   }
-  top.appendChild(tro);
-  top.appendChild(box);
-  d.appendChild(top);
+  top.appendChild(tro); top.appendChild(box); d.appendChild(top);
 
-  const body=document.createElement('div'); body.className='colbody champbody';
+  const body=document.createElement('div'); body.className='colbody';
+  body.style.position='relative'; body.style.width='100%'; body.style.height=BRACKET_H+'px';
 
-  // the Final match card — the only flowed child, so it sits at the true vertical center (aligned with the semifinals)
-  const finalMatch=document.createElement('div'); finalMatch.className='finalmatch';
+  // the Final centers at the bracket's vertical midpoint (row 3.5), level between the two semifinals
+  const wrap=document.createElement('div'); wrap.className='match';
+  wrap.style.position='absolute'; wrap.style.left='5px'; wrap.style.right='5px';
+  wrap.style.top=(3.5*R32_PITCH + R32_PITCH/2 - CARD_H/2)+'px';
   const card=document.createElement('div'); card.className='matchcard finalcard';
-  const pill=document.createElement('div'); pill.className='mpill'; pill.textContent=matchHeader(4,0);
+  const pill=document.createElement('div'); pill.className='mpill'; pill.textContent=pillHeader(4,0);
   pill.title='Tap to see who picked whom'; pill.onclick=(ev)=>{ ev.stopPropagation(); openGameModal(4,0); };
   card.appendChild(pill);
   card.appendChild(slotEl(4,0,'a'));
-  const vs=document.createElement('div'); vs.className='vsdiv'; vs.innerHTML='<span>vs</span>';
-  card.appendChild(vs);
+  const vs=document.createElement('div'); vs.className='vsdiv'; vs.innerHTML='<span>vs</span>'; card.appendChild(vs);
   card.appendChild(slotEl(4,0,'b'));
-  finalMatch.appendChild(card);
-  body.appendChild(finalMatch);
+  wrap.appendChild(card);
+  body.appendChild(wrap);
 
   d.appendChild(body);
   return d;
@@ -1040,7 +1136,7 @@ function reset(){          // Create/Edit mode: clear the working picks
 const BACKUP_VERSION=1;
 
 // ---- embedded Hunt Family brackets (baked into the file so they're always available) ----
-const HUNT_FAMILY_BACKUP='WC26-eyJ2IjoxLCJzYXZlZCI6IjIwMjYtMDYtMjlUMjE6NTU6NDcuNTU5WiIsImVudHJpZXMiOlt7ImlkIjoiZTE3ODI3Njk2OTEyNDA3Njg2MCIsIm5hbWUiOiJUYXlsb3IiLCJjb2RlIjoiQ0FOfEJSQXxHRVJ8TkVEfE5PUnxGUkF8TUVYfEVOR3xCRUx8VVNBfEVTUHxTVUl8UE9SfEFVU3xBUkd8Q09MfEJSQXxORUR8RlJBfEVOR3xCRUx8RVNQfFBPUnxBUkd8QlJBfEZSQXxFU1B8QVJHfEZSQXxBUkd8RlJBIiwiY2hhbXAiOiJGUkEifSx7ImlkIjoiZTE3ODI3Njk2OTEyNDAxNTE3OCIsIm5hbWUiOiJQcmVzdG9uIiwiY29kZSI6IkNBTnxCUkF8R0VSfE5FRHxOT1J8RlJBfE1FWHxFTkd8QkVMfFVTQXxFU1B8U1VJfFBPUnxBVVN8QVJHfENPTHxCUkF8R0VSfEZSQXxNRVh8QkVMfEVTUHxQT1J8QVJHfEdFUnxGUkF8RVNQfFBPUnxGUkF8UE9SfFBPUiIsImNoYW1wIjoiUE9SIn0seyJpZCI6ImUxNzgyNzY5NjkxMjQwMTMwMzEiLCJuYW1lIjoiQXZlcnkiLCJjb2RlIjoiQ0FOfEJSQXxHRVJ8TkVEfE5PUnxGUkF8TUVYfEVOR3xCRUx8VVNBfEVTUHxTVUl8UE9SfEFVU3xBUkd8Q09MfEJSQXxHRVJ8RlJBfE1FWHxCRUx8RVNQfFBPUnxBUkd8QlJBfEZSQXxFU1B8UE9SfEZSQXxFU1B8RVNQIiwiY2hhbXAiOiJFU1AifSx7ImlkIjoiZTE3ODI3Njk2OTEyNDA3OTA0OCIsIm5hbWUiOiJNb21teSIsImNvZGUiOiJDQU58QlJBfEdFUnxORUR8Tk9SfEZSQXxNRVh8RU5HfEJFTHxVU0F8RVNQfFNVSXxQT1J8QVVTfEFSR3xDT0x8QlJBfEdFUnxGUkF8TUVYfEJFTHxFU1B8UE9SfENPTHxCUkF8RlJBfEVTUHxQT1J8QlJBfFBPUnxCUkEiLCJjaGFtcCI6IkJSQSJ9LHsiaWQiOiJlMTc4Mjc2OTY5MTI0MDQ3NzAiLCJuYW1lIjoiRGFkZHkiLCJjb2RlIjoiQ0FOfEJSQXxHRVJ8TkVEfENJVnxGUkF8TUVYfEVOR3xCRUx8VVNBfEVTUHxTVUl8UE9SfEFVU3xBUkd8Q09MfEJSQXxHRVJ8RlJBfEVOR3xVU0F8RVNQfFBPUnxDT0x8QlJBfEVOR3xFU1B8Q09MfEVOR3xDT0x8RU5HIiwiY2hhbXAiOiJFTkcifV0sInJlc3VsdHMiOiJDQU58QlJBfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHwiLCJzY29yZXMiOnsiTUVYfFJTQSI6eyJjMSI6Ik1FWCIsImMyIjoiUlNBIiwiZzEiOjIsImcyIjowLCJwZW4iOm51bGwsImtpbmQiOiJGVCJ9LCJCSUh8U1VJIjp7ImMxIjoiU1VJIiwiYzIiOiJCSUgiLCJnMSI6NCwiZzIiOjEsInBlbiI6bnVsbCwia2luZCI6IkZUIn0sIkNBTnxTVUkiOnsiYzEiOiJTVUkiLCJjMiI6IkNBTiIsImcxIjoyLCJnMiI6MSwicGVuIjpudWxsLCJraW5kIjoiRlQifSwiUEFSfFVTQSI6eyJjMSI6IlVTQSIsImMyIjoiUEFSIiwiZzEiOjQsImcyIjoxLCJwZW4iOm51bGwsImtpbmQiOiJGVCJ9LCJBVVN8VVNBIjp7ImMxIjoiVVNBIiwiYzIiOiJBVVMiLCJnMSI6MiwiZzIiOjAsInBlbiI6bnVsbCwia2luZCI6IkZUIn0sIkNJVnxFQ1UiOnsiYzEiOiJDSVYiLCJjMiI6IkVDVSIsImcxIjoxLCJnMiI6MCwicGVuIjpudWxsLCJraW5kIjoiRlQifSwiQ0lWfEdFUiI6eyJjMSI6IkdFUiIsImMyIjoiQ0lWIiwiZzEiOjIsImcyIjoxLCJwZW4iOm51bGwsImtpbmQiOiJGVCJ9LCJFQ1V8R0VSIjp7ImMxIjoiRUNVIiwiYzIiOiJHRVIiLCJnMSI6MiwiZzIiOjEsInBlbiI6bnVsbCwia2luZCI6IkZUIn0sIk5FRHxTV0UiOnsiYzEiOiJORUQiLCJjMiI6IlNXRSIsImcxIjo1LCJnMiI6MSwicGVuIjpudWxsLCJraW5kIjoiRlQifSwiRlJBfFNFTiI6eyJjMSI6IkZSQSIsImMyIjoiU0VOIiwiZzEiOjMsImcyIjoxLCJwZW4iOm51bGwsImtpbmQiOiJGVCJ9LCJOT1J8U0VOIjp7ImMxIjoiTk9SIiwiYzIiOiJTRU4iLCJnMSI6MywiZzIiOjIsInBlbiI6bnVsbCwia2luZCI6IkZUIn0sIkZSQXxOT1IiOnsiYzEiOiJOT1IiLCJjMiI6IkZSQSIsImcxIjoxLCJnMiI6NCwicGVuIjpudWxsLCJraW5kIjoiRlQifSwiQUxHfEFSRyI6eyJjMSI6IkFSRyIsImMyIjoiQUxHIiwiZzEiOjMsImcyIjowLCJwZW4iOm51bGwsImtpbmQiOiJGVCJ9LCJBUkd8QVVUIjp7ImMxIjoiQVJHIiwiYzIiOiJBVVQiLCJnMSI6MiwiZzIiOjAsInBlbiI6bnVsbCwia2luZCI6IkZUIn0sIkNPRHxDT0wiOnsiYzEiOiJDT0wiLCJjMiI6IkNPRCIsImcxIjoxLCJnMiI6MCwicGVuIjpudWxsLCJraW5kIjoiRlQifSwiQ1JPfEVORyI6eyJjMSI6IkVORyIsImMyIjoiQ1JPIiwiZzEiOjQsImcyIjoyLCJwZW4iOm51bGwsImtpbmQiOiJGVCJ9LCJDUk98R0hBIjp7ImMxIjoiQ1JPIiwiYzIiOiJHSEEiLCJnMSI6MiwiZzIiOjEsInBlbiI6bnVsbCwia2luZCI6IkZUIn0sIkNBTnxSU0EiOnsiYzEiOiJSU0EiLCJjMiI6IkNBTiIsImcxIjowLCJnMiI6MSwicGVuIjpudWxsLCJraW5kIjoiRlQifSwiQlJBfEpQTiI6eyJjMSI6IkJSQSIsImMyIjoiSlBOIiwiZzEiOjIsImcyIjoxLCJwZW4iOm51bGwsImtpbmQiOiJGVCJ9fX0=';
+const HUNT_FAMILY_BACKUP='WC26-eyJ2IjogMSwgInNhdmVkIjogIjIwMjYtMDctMDFUMTc6NTY6MjkuODk2WiIsICJlbnRyaWVzIjogW3siaWQiOiAiZTE3ODI5MjE3MzEzMzM2MTI0NCIsICJuYW1lIjogIkRhZGR5IiwgImNvZGUiOiAiUEFSfEZSQXxDQU58TUFSfFBPUnxFU1B8VVNBfEJFTHxCUkF8Tk9SfE1FWHxFTkd8QVJHfEFVU3xTVUl8Q09MfEZSQXxNQVJ8RVNQfFVTQXxCUkF8RU5HfEFSR3xDT0x8RlJBfEVTUHxFTkd8Q09MfEZSQXxFTkd8RU5HIiwgImNoYW1wIjogIkVORyJ9LCB7ImlkIjogImUxNzgyOTIyNDM3NDk2NDM2MTIiLCAibmFtZSI6ICJUYXlsb3IiLCAiY29kZSI6ICJQQVJ8RlJBfENBTnxNQVJ8UE9SfEVTUHxVU0F8QkVMfEJSQXxOT1J8TUVYfEVOR3xBUkd8QVVTfFNVSXxDT0x8RlJBfENBTnxFU1B8QkVMfEJSQXxFTkd8QVJHfENPTHxGUkF8RVNQfEJSQXxBUkd8RlJBfEFSR3xGUkEiLCAiY2hhbXAiOiAiRlJBIn0sIHsiaWQiOiAiZTE3ODI5MjI2NTQyODcyODQ4OCIsICJuYW1lIjogIkF2ZXJ5IiwgImNvZGUiOiAiUEFSfEZSQXxDQU58TUFSfFBPUnxFU1B8VVNBfEJFTHxCUkF8Tk9SfE1FWHxFTkd8QVJHfEFVU3xTVUl8Q09MfEZSQXxDQU58RVNQfFVTQXxCUkF8RU5HfEFSR3xDT0x8RlJBfEVTUHxCUkF8QVJHfEVTUHxBUkd8RVNQIiwgImNoYW1wIjogIkVTUCJ9LCB7ImlkIjogImUxNzgyOTIyNzk4OTU4MzM1NjMiLCAibmFtZSI6ICJQcmVzdG9uIiwgImNvZGUiOiAiUEFSfEZSQXxDQU58TUFSfFBPUnxFU1B8VVNBfEJFTHxCUkF8Tk9SfE1FWHxFTkd8QVJHfEFVU3xTVUl8Q09MfEZSQXxNQVJ8UE9SfFVTQXxCUkF8TUVYfEFSR3xDT0x8RlJBfFBPUnxCUkF8QVJHfFBPUnxBUkd8UE9SIiwgImNoYW1wIjogIlBPUiJ9LCB7ImlkIjogImUxNzgyOTI3MTc4ODAwNjE1ODEiLCAibmFtZSI6ICJNb21teSIsICJjb2RlIjogIlBBUnxGUkF8Q0FOfE1BUnxQT1J8RVNQfFVTQXxCRUx8QlJBfE5PUnxNRVh8RU5HfEFSR3xBVVN8U1VJfENPTHxGUkF8Q0FOfFBPUnxCRUx8QlJBfE1FWHxBUkd8Q09MfEZSQXxQT1J8QlJBfENPTHxGUkF8QlJBfEJSQSIsICJjaGFtcCI6ICJCUkEifV0sICJyZXN1bHRzIjogIlBBUnxGUkF8Q0FOfE1BUnx8fHx8QlJBfE5PUnxNRVh8fHx8fHx8fHx8fHx8fHx8fHx8fCIsICJzY29yZXMiOiB7IkNBTnxSU0EiOiB7ImMxIjogIkNBTiIsICJjMiI6ICJSU0EiLCAiZzEiOiAxLCAiZzIiOiAwLCAicGVuIjogbnVsbCwgImtpbmQiOiAiRlQifSwgIkJSQXxKUE4iOiB7ImMxIjogIkJSQSIsICJjMiI6ICJKUE4iLCAiZzEiOiAyLCAiZzIiOiAxLCAicGVuIjogbnVsbCwgImtpbmQiOiAiRlQifSwgIkdFUnxQQVIiOiB7ImMxIjogIkdFUiIsICJjMiI6ICJQQVIiLCAiZzEiOiAxLCAiZzIiOiAxLCAicGVuIjogWzMsIDRdLCAia2luZCI6ICJGVCJ9LCAiRlJBfFNXRSI6IHsiYzEiOiAiRlJBIiwgImMyIjogIlNXRSIsICJnMSI6IDMsICJnMiI6IDAsICJwZW4iOiBudWxsLCAia2luZCI6ICJGVCJ9LCAiTUFSfE5FRCI6IHsiYzEiOiAiTkVEIiwgImMyIjogIk1BUiIsICJnMSI6IDEsICJnMiI6IDEsICJwZW4iOiBbMiwgM10sICJraW5kIjogIkZUIn0sICJDSVZ8Tk9SIjogeyJjMSI6ICJOT1IiLCAiYzIiOiAiQ0lWIiwgImcxIjogMiwgImcyIjogMSwgInBlbiI6IG51bGwsICJraW5kIjogIkZUIn0sICJFQ1V8TUVYIjogeyJjMSI6ICJNRVgiLCAiYzIiOiAiRUNVIiwgImcxIjogMiwgImcyIjogMCwgInBlbiI6IG51bGwsICJraW5kIjogIkZUIn19fQ==';
 
 async function loadHuntFamily(){
   try{
@@ -1052,7 +1148,7 @@ async function loadHuntFamily(){
   }
 }
 
-// auto-load the Hunt Family brackets the first time the file is opened with empty storage
+// auto-load the seed (actual results + scores; brackets cleared pending re-pick) on first open
 async function maybeSeedHuntFamily(){
   if(entries.length===0){
     try{ await applyBackup(decodeBackup(HUNT_FAMILY_BACKUP)); }catch(e){}
@@ -1248,14 +1344,14 @@ function openTeamModal(teamCode){
 }
 
 function openGameModal(r,mi){
-  const ROUND=['Round of 32','Round of 16','Quarterfinal','Semifinal','Final'][r];
   // the ACTUAL teams (and result) in this slot
   const ra=slotTeamIn(results,r,mi,'a'), rb=slotTeamIn(results,r,mi,'b');
   const actualWinner=results[r][mi].w;
   const sc=scoreForMatch(r,mi);
 
-  // header
-  document.getElementById('gameHdr').textContent=ROUND+' · '+matchHeader(r,mi);
+  // header — matchHeader already includes the round label for r>0, and the
+  // full date/venue for r===0, so use it directly (no double label).
+  document.getElementById('gameHdr').textContent=matchHeader(r,mi);
 
   // matchup line — use actual teams if known, else "TBD"
   const mu=document.getElementById('gameMatchup');
