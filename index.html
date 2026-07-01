@@ -654,15 +654,40 @@ function feedScore(match){
   return { c1, c2, g1:base[0], g2:base[1], pen, kind: s.et?'AET':'FT' };
 }
 
-// apply finished results into a fresh results bracket, round by round (R32 first so R16 slots populate)
+// Parse a feed match's date (ISO "YYYY-MM-DD" or similar) into a Date, or null.
+function feedMatchDate(match){
+  const d=match && (match.date || match.datetime || match.utcDate);
+  if(!d) return null;
+  const t=Date.parse(d);
+  return isNaN(t)? null : new Date(t);
+}
+// A feed result is only trustworthy if the match has actually been played:
+// it must have a completed score AND its date must be today or earlier.
+// This blocks the "phantom winner" case where the feed lists a future match as decided.
+function feedResultIsReal(match){
+  if(feedWinner(match)==null) return false;   // no decisive completed score
+  const md=feedMatchDate(match);
+  if(md){
+    const today=new Date(); today.setHours(23,59,59,999);
+    if(md.getTime()>today.getTime()) return false;  // scheduled in the future → ignore
+  }
+  return true;
+}
+
+// Merge finished feed results ON TOP OF the current results baseline (the curated seed),
+// round by round. Never removes an existing result; never advances a team past an
+// unplayed match (only sets a slot when both its teams are known AND the feed reports
+// that exact pairing as genuinely finished).
 function applyFeed(matches){
-  const b=emptyBracket();
-  const winners={}; // "C1|C2" (sorted) -> winnerCode
-  const scores={};  // "C1|C2" (sorted) -> score object (with codes so we know orientation)
+  // start from a clone of the CURRENT results so curated/known games are preserved
+  const b=deserialize(serialize(results));
+  const winners={}; // "C1|C2" (sorted) -> winnerCode  (only genuinely-played matches)
+  const scores={};
   for(const mt of matches){
+    if(!feedResultIsReal(mt)) continue;              // guard: must be actually played
     const w=feedWinner(mt);
-    if(!w) continue;
     const c1=codeFromName(mt.team1), c2=codeFromName(mt.team2);
+    if(!c1||!c2) continue;
     const key=[c1,c2].sort().join('|');
     winners[key]=w;
     const sc=feedScore(mt); if(sc) scores[key]=sc;
@@ -671,9 +696,9 @@ function applyFeed(matches){
   for(let r=0;r<5;r++){
     for(let mi=0;mi<b[r].length;mi++){
       const a=slotTeamIn(b,r,mi,'a'), bb=slotTeamIn(b,r,mi,'b');
-      if(!a||!bb) continue;
+      if(!a||!bb) continue;                          // teams for this slot not both known yet
       const key=[a,bb].sort().join('|');
-      if(winners[key]){ b[r][mi].w=winners[key]; applied++; }
+      if(winners[key] && b[r][mi].w!==winners[key]){ b[r][mi].w=winners[key]; applied++; }
     }
   }
   return {bracket:b, applied, scores};
@@ -708,22 +733,18 @@ async function syncResults(manual){
     return false;
   }
   const {bracket,applied,scores}=applyFeed(data.matches);
-  // never lose the known seed: ensure Canada R32 if feed somehow lacks it
-  if(!bracket[0][0].w){ const seed=deserialize(seedResults()); bracket[0][0].w=seed[0][0].w; }
-  // detect whether anything actually changed (avoid needless re-renders on the 15s poll)
+  // detect whether anything actually changed (avoid needless re-renders on the poll)
   const before=serialize(results)+'|'+JSON.stringify(SCORES);
-  results=bracket;
-  SCORES = Object.keys(scores).length ? scores : SCORES;
-  const ck=['CAN','RSA'].sort().join('|');
-  if(!SCORES[ck]) Object.assign(SCORES, seedScores());
+  results=bracket;                       // applyFeed already merged onto the seed baseline
+  SCORES = Object.assign({}, SCORES, scores);   // merge scores, never wipe existing ones
   const after=serialize(results)+'|'+JSON.stringify(SCORES);
   const changed = before!==after;
   await persistResults();
   await storeSet('wc:scores', SCORES);
   lastSync=new Date();
-  // re-render only if data changed (so open popups aren't disturbed by the poll),
-  // or if the user pressed a manual control
-  if(changed || manual){ render(); renderLeaderboard(); }
+  // re-render if data changed or the user pressed a manual control. Refresh BOTH the
+  // bracket and the standings (leaderboard + games-by-date) so whichever tab is open updates.
+  if(changed || manual){ render(); renderLeaderboard(); renderDateGames(); }
   updateSyncStamp();
   if(manual) flash('Results synced ✓ ('+applied+' knockout game'+(applied===1?'':'s')+' recorded)');
   return changed;
@@ -801,6 +822,9 @@ function setMode(m){
     document.getElementById('editingLine').textContent='STANDINGS — the leaderboard and a breakdown of every game by date, with each person’s picks and points.';
     document.getElementById('modehint').textContent='';
     updateSyncStamp();
+    renderLeaderboard();
+    renderDateGames();
+    syncResults(false);   // refresh live results on entering the standings tab too
   } else if(m==='edit'){
     document.getElementById('editingLine').textContent='CREATE / EDIT — tap teams to advance them, type a name, then Save. Winners flow to the next round automatically.';
     document.getElementById('modehint').textContent='';
@@ -1961,13 +1985,13 @@ function autofill(){
 (async function init(){
   await loadAll();          // loads saved entries + persisted results
   await maybeSeedHuntFamily(); // first open with empty storage -> load Hunt Family brackets
-  // LOCKED VIEW-ONLY BUILD: default to the Standings tab (leaderboard + games by date).
-  setMode('standings');     // sets toolbars, tabs, and renders
-  // NOTE: automatic live-feed sync is intentionally DISABLED. The external feed was
-  // injecting winners for games that haven't been played yet (e.g. marking England as
-  // advanced), which corrupted Earned/Live/Dead scoring. Results are curated in the
-  // HUNT_FAMILY_BACKUP seed and updated deliberately. (Manual syncResults() still exists
-  // if you ever want to pull the feed on demand.)
+  setMode('standings');     // sets toolbars, tabs, and renders (also kicks off a sync)
+  syncResults(false);       // initial background sync on open
+  // poll the feed every 30s. applyFeed now MERGES onto the curated seed and only accepts
+  // games that are genuinely finished (completed score AND date today-or-earlier), so a
+  // future/unplayed match can no longer inject a phantom winner. Re-renders whichever
+  // tab is open when results actually change.
+  setInterval(()=>{ syncResults(false); }, 30000);
 })();
 </script>
 </body>
