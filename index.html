@@ -605,18 +605,14 @@ async function loadAll(){
   updateBackupCount();
 }
 
-// pre-seed the actual results with games already finished (as of June 29, 2026)
+// Results are seeded from HUNT_FAMILY_BACKUP (the single source of truth) via
+// maybeSeedHuntFamily(). This returns an EMPTY bracket so nothing stale is injected
+// on a first, truly-empty load before the backup seed is applied.
 function seedResults(){
-  const b=emptyBracket();
-  // R32 match index 0 = South Africa vs Canada -> Canada won 1-0 (June 28)
-  b[0][0].w='CAN';
-  return serialize(b);
+  return serialize(emptyBracket());
 }
-// matching scoreline for the seeded game: Canada 1–0 South Africa
 function seedScores(){
-  const key=['CAN','RSA'].sort().join('|');
-  const s={}; s[key]={c1:'CAN',c2:'RSA',g1:1,g2:0,pen:null,kind:'FT'};
-  return s;
+  return {};
 }
 
 // ---- LIVE SYNC: pull finished knockout results from the open data feed ----
@@ -1631,22 +1627,65 @@ function renderLeaderboard(){
 
 // ---- DATE SECTION: all games on a date, each person's pick + points ----
 // distinct R32 dates in chronological order (later rounds added as they get specific dates)
-function dateList(){
-  const seen=[]; 
-  for(const s of R32_SCHED){ if(!seen.includes(s[0])) seen.push(s[0]); }
-  return seen;
+// Parse a "Mon D" label (e.g. "Jul 3") into a sortable 2026 Date.
+const _MON={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+function parseSchedDate(label){
+  const p=(label||'').trim().split(/\s+/);
+  const mo=_MON[p[0]]; const day=parseInt(p[1],10);
+  if(mo===undefined||isNaN(day)) return null;
+  return new Date(2026, mo, day);
 }
-let dateIdx=0; // which date is showing
+// collect every scheduled game across ALL rounds as {r,mi,date,label,time,city}
+function allGames(){
+  const out=[];
+  R32_SCHED.forEach((s,mi)=> out.push({r:0,mi,label:s[0],time:s[1],city:s[2]}));
+  R16_SCHED.forEach((s,mi)=> out.push({r:1,mi,label:s[1].split(' · ')[0],time:s[1].split(' · ')[1]||'',city:s[2]}));
+  QF_SCHED.forEach((s,mi)=> out.push({r:2,mi,label:s[1].split(' · ')[0],time:s[1].split(' · ')[1]||'',city:s[2]}));
+  SF_SCHED.forEach((s,mi)=> out.push({r:3,mi,label:s[1].split(' · ')[0],time:s[1].split(' · ')[1]||'',city:s[2]}));
+  out.push({r:4,mi:0,label:FINAL_SCHED[1].split(' · ')[0],time:FINAL_SCHED[1].split(' · ')[1]||'',city:FINAL_SCHED[2]});
+  return out;
+}
+function dateList(){
+  // unique date labels, sorted chronologically
+  const map={};
+  for(const g of allGames()){
+    const d=parseSchedDate(g.label);
+    if(d) map[g.label]=d.getTime();
+  }
+  return Object.keys(map).sort((a,b)=>map[a]-map[b]);
+}
+// index of today's date in dateList (clamped into range: before the tournament → first day,
+// after → last day). Uses the real current date.
+function defaultDateIdx(){
+  const dates=dateList();
+  if(dates.length===0) return 0;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const times=dates.map(d=>parseSchedDate(d).getTime());
+  const tnow=today.getTime();
+  // exact match?
+  for(let i=0;i<times.length;i++){ if(times[i]===tnow) return i; }
+  if(tnow<times[0]) return 0;
+  if(tnow>times[times.length-1]) return times.length-1;
+  // between listed dates → the next upcoming game day
+  for(let i=0;i<times.length;i++){ if(times[i]>=tnow) return i; }
+  return times.length-1;
+}
+let dateIdx=null; // set on first render to today's date
 
 function gamesOnDate(date){
-  // returns [{r:0, mi, time, city}] for R32 games on that date
-  const out=[];
-  R32_SCHED.forEach((s,mi)=>{ if(s[0]===date) out.push({r:0, mi, time:s[1], city:s[2]}); });
+  // returns [{r, mi, time, city}] for ALL rounds' games on that date, ordered by time
+  const out=allGames().filter(g=>g.label===date).map(g=>({r:g.r,mi:g.mi,time:g.time,city:g.city}));
+  const t=(s)=>{ // sort by kickoff time within the day
+    const m=(s||'').match(/(\d+):?(\d*)(a|p)/i); if(!m) return 0;
+    let h=parseInt(m[1],10)%12; if(/p/i.test(m[3])) h+=12; return h*60+(parseInt(m[2]||'0',10));
+  };
+  out.sort((a,b)=>t(a.time)-t(b.time));
   return out;
 }
 
 function cycleDate(delta){
   const dates=dateList();
+  if(dateIdx===null) dateIdx=defaultDateIdx();
   dateIdx=(dateIdx+delta+dates.length)%dates.length;
   renderDateGames();
 }
@@ -1655,6 +1694,7 @@ function renderDateGames(){
   const host=document.getElementById('dateGames');
   if(!host) return;
   const dates=dateList();
+  if(dateIdx===null) dateIdx=defaultDateIdx();   // first render → today's date
   if(dateIdx>=dates.length) dateIdx=0;
   const date=dates[dateIdx];
   const games=gamesOnDate(date);
@@ -1919,15 +1959,15 @@ function autofill(){
 }
 // ---- init ----
 (async function init(){
-  await loadAll();          // loads saved entries + persisted results (seeds Canada win)
+  await loadAll();          // loads saved entries + persisted results
   await maybeSeedHuntFamily(); // first open with empty storage -> load Hunt Family brackets
   // LOCKED VIEW-ONLY BUILD: default to the Standings tab (leaderboard + games by date).
-  // For an editable version, change this to setMode('edit').
   setMode('standings');     // sets toolbars, tabs, and renders
-  syncResults(false);       // initial background sync on open
-  // auto-sync every 15 seconds (the feed itself updates ~daily, so this just
-  // catches any update promptly; manual Sync buttons removed)
-  setInterval(()=>{ syncResults(false); }, 15000);
+  // NOTE: automatic live-feed sync is intentionally DISABLED. The external feed was
+  // injecting winners for games that haven't been played yet (e.g. marking England as
+  // advanced), which corrupted Earned/Live/Dead scoring. Results are curated in the
+  // HUNT_FAMILY_BACKUP seed and updated deliberately. (Manual syncResults() still exists
+  // if you ever want to pull the feed on demand.)
 })();
 </script>
 </body>
